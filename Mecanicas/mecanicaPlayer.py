@@ -35,7 +35,7 @@ class Jogo:
     def __init__(self):
         pygame.init()
         self.tela = pygame.display.set_mode((800, 600))
-        pygame.display.set_caption("Movimentação Top-Down com POO")
+        pygame.display.set_caption("Movimentacao")
         self.rodando = True
 
         self.relogio = pygame.time.Clock()
