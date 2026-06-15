@@ -39,3 +39,14 @@ class Jogo:
         self.player.desenhar(self.tela)
 
         pygame.display.flip()
+
+
+def checar_eventos(self):
+    # o pygame tem um sistema de eventos onde ele registra tudo o que acontece, quando o jogador apertar x para fechar a janela, o evento QUIT é registrado e fecha o jogo
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT:
+            self.rodando = False
+
+        if evento.type == pygame.KEYDOWN:
+            if evento.key == pygame.K_ESCAPE:
+                self.rodando = False
