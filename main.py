@@ -1,5 +1,7 @@
 #esse arquivo será onde o jogo irá ser inicializado
-
-import pygame
 import sys
+from sistemas.jogo import Jogo
 
+if __name__ == "__main__":
+    meu_jogo = Jogo()
+    meu_jogo.rodar() 
