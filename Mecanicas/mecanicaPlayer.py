@@ -15,16 +15,20 @@ class Jogador:
         teclas = pygame.key.get_pressed()
 
         if teclas[pygame.K_LEFT] or teclas[pygame.K_a]:
-            self.x -= self.velocidade
+            if self.x > 0 :
+                self.x -= self.velocidade
 
         if teclas[pygame.K_RIGHT] or teclas[pygame.K_d]:
-            self.x += self.velocidade
+            if self.x < 770 :
+                self.x += self.velocidade
 
         if teclas[pygame.K_UP] or teclas[pygame.K_w]:
-            self.y -= self.velocidade
+            if self.y > 0 :
+                self.y -= self.velocidade
 
         if teclas[pygame.K_DOWN] or teclas[pygame.K_s]:
-            self.y += self.velocidade
+            if self.y < 570 :
+                self.y += self.velocidade
 
     def desenhar(self, tela):
         retangulo = pygame.Rect(self.x, self.y, self.largura, self.altura)
