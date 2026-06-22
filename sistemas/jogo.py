@@ -53,7 +53,7 @@ class Jogo:
                         px = self.player.x
                         py = self.player.y
                         direcao = self.player.direcao_da_frente
-                        novo_tiro = Projetil(px, py, direcao)
+                        novo_tiro = Projetil(px + 15, py + 15, direcao)
                         self.grupo_projeteis.add(novo_tiro)
                         self.player.ultimo_tiro = tempo_atual
 
