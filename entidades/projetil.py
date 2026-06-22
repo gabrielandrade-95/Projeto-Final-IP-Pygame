@@ -36,3 +36,5 @@ class Projetil (pygame.sprite.Sprite):
         if (self.rect.x < 0 or self.rect.x > 800 or 
             self.rect.y < 0 or self.rect.y > 600):
             self.kill()
+
+    

@@ -12,6 +12,11 @@ class Jogador:
         self.direcao_da_frente = "direita"  # Inicialmente, o jogador está olhando para a direita
         self.cooldown_tiro = 300  # Tempo em milissegundos (300 = meio segundo)
         self.ultimo_tiro = 0      # Relógio zera quando o jogo começa
+        self.vida_jogador = 10
+        
+                
+        # Criar o rect para colisões
+        self.rect = pygame.Rect(self.x, self.y, self.largura, self.altura)
 
     def mover(self):
         teclas = pygame.key.get_pressed()
@@ -35,6 +40,21 @@ class Jogador:
             if self.y < 570 :
                 self.y += self.velocidade
                 self.direcao_da_frente = "baixo"
+        # atualiza o rect do jogador após o movimento
+        self.rect.x = self.x
+        self.rect.y = self.y
+    
+    def dano_jogador(self, grupo_inimigos):
+        tempo_atual = pygame.time.get_ticks()
+        
+        for inimigo in grupo_inimigos:
+            if self.rect.colliderect(inimigo.rect):
+                
+                if tempo_atual - inimigo.ultimo_dano >= inimigo.cooldown_dano:
+                    self.vida_jogador -= 0.35
+                    inimigo.ultimo_dano = tempo_atual
+                    return True
+        return False
 
     def desenhar(self, tela):
         retangulo = pygame.Rect(self.x, self.y, self.largura, self.altura)
