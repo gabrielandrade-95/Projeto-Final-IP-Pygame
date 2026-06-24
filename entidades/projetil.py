@@ -5,7 +5,12 @@ class Projetil (pygame.sprite.Sprite):
         super().__init__()
         
         # Cria a imagem da bala 
-        self.image = pygame.Surface((10, 4))
+        self.direcao = direcao # Primeiro é verificada a direção em que o projétil está sendo disparado
+        if self.direcao == "cima" or self.direcao == "baixo" :
+            self.image = pygame.Surface((4,10)) # Projétil vertical
+        else :
+            self.image = pygame.Surface((10,4)) # Projétil horizontal
+
         self.image.fill((255, 255, 0)) # Amarelo
         self.rect = self.image.get_rect()
         
@@ -15,7 +20,6 @@ class Projetil (pygame.sprite.Sprite):
         
         
         self.velocidade = 15
-        self.direcao = direcao
         self.vel_x = 0
         self.vel_y = 0
         
@@ -24,7 +28,7 @@ class Projetil (pygame.sprite.Sprite):
         elif self.direcao == "esquerda":
             self.vel_x = -self.velocidade
         elif self.direcao == "cima":
-            self.vel_y = -self.velocidade
+            self.vel_y = -self.velocidade   
         elif self.direcao == "baixo":
             self.vel_y = self.velocidade
             
@@ -36,5 +40,3 @@ class Projetil (pygame.sprite.Sprite):
         if (self.rect.x < 0 or self.rect.x > 800 or 
             self.rect.y < 0 or self.rect.y > 600):
             self.kill()
-
-    
