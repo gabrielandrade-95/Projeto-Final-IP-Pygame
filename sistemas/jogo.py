@@ -14,6 +14,8 @@ class Jogo:
         pygame.display.set_caption("O Cangaço")
         self.rodando = True
         self.relogio = pygame.time.Clock()
+        
+        self.fonte_pequena = pygame.font.SysFont(None, 36)
 
         #cria o player
         self.player = Jogador(400, 300)
@@ -28,13 +30,19 @@ class Jogo:
 
         #contadores
         self.kills = 0
-        self.fase_completa = False
+        self.fase_completa1 = False
+        self.fase_completa2 = False
+        self.fase_completa3 = False
 
         self.peixeira_coletada = False
+        self.revolver_coletado = False
+        self.espingarda_coletada = False
 
         #cria a peixeira no chão 
         peixeira = Peixeira(400, 250)
         self.grupo_coletaveis.add(peixeira)
+        
+        
 
 
         caminho_fonte = "assets/Smokum.ttf"
@@ -116,6 +124,16 @@ class Jogo:
         if self.player.vida_jogador <= 0:
             return True
         return False
+    
+    def criar_revolver(self):
+        if (self.fase_completa1) and (not self.fase_completa2) and (not self.revolver_coletado):
+            revolver = Revolver(400, 250)
+            self.grupo_coletaveis.add(revolver)
+        
+    def criar_espingarda(self):
+        if (self.fase_completa2) and (not self.fase_completa3) and (not self.espingarda_coletada):
+            espingarda = Espingarda(400, 250)
+            self.grupo_coletaveis.add(espingarda)
 
     def atualizar(self):
         #se morrer para tudo
@@ -130,10 +148,16 @@ class Jogo:
         #colisoes
         self.checar_colisoes()
         self.player.dano_jogador(self.grupo_inimigos)
+        
+        
 
         #atualizar inimigos
         for inimigo in self.grupo_inimigos:
             inimigo.update(self.player, self.grupo_inimigos)
+            
+        #vendo se já pode criar revolver ou espingarda
+        self.criar_revolver()
+        self.criar_espingarda()
 
         #processar a coleta de itens
         for coletavel in self.grupo_coletaveis:
@@ -142,13 +166,32 @@ class Jogo:
             #se coletou a peixeira ativa os inimigos
             if isinstance(coletavel, Peixeira) and coletavel.coletado:
                 self.peixeira_coletada = True
+            
+            elif isinstance(coletavel, Revolver) and coletavel.coletado:
+                self.revolver_coletado = True
+            
+            elif isinstance(coletavel, Espingarda) and coletavel.coletado:
+                self.espingarda_coletada = True
 
-        if self.kills >= 10:
-            self.fase_completa = True
+        # verificando se a fase foi completada
+        if self.fase_completa1 == False and self.kills >= 10:
+            self.fase_completa1 = True
             self.grupo_inimigos.empty()
+            self.kills = 0
+        elif (self.fase_completa2 == False) and (self.fase_completa1 == True) and self.kills >= 10:
+            self.fase_completa2 = True
+            self.grupo_inimigos.empty()
+            self.kills = 0
+        elif (self.fase_completa3 == False) and (self.fase_completa2 == True) and self.kills >= 10:
+            self.fase_completa3 = True
+            self.grupo_inimigos.empty()
+            self.kills = 0
 
-        #so aparece os inimigos se tiver coletado a peixeira E não estiver na fase completa
-        if self.peixeira_coletada and not self.fase_completa:
+        #so aparece os inimigos se tiver coletado a arma da fase E não estiver na fase completa
+        if self.peixeira_coletada and not self.fase_completa1:
+            self.onda_inimigos(self.grupo_inimigos, self.player)
+        
+        elif self.revolver_coletado and not self.fase_completa2:
             self.onda_inimigos(self.grupo_inimigos, self.player)
 
     def desenhar(self):
@@ -185,23 +228,42 @@ class Jogo:
         self.tela.blit(vida_sombra, (12, 52))
         self.tela.blit(vida_surf, (10, 50))
 
+     
        
-        if not self.peixeira_coletada:           #msg antes de pegara pexeira
+     
+        if not self.peixeira_coletada and not self.fase_completa1:           #msg antes de pegara pexeira
             msg_surf = self.fonte.render(f"Colete a Peixeira para começar!", True, (255, 255, 0))
             msg_sombra = self.fonte.render(f"Colete a Peixeira para começar!", True, self.COR_SOMBRA)
-            self.tela.blit(msg_sombra, (152, 22))
-            self.tela.blit(msg_surf, (150, 20))
+            self.tela.blit(msg_sombra, (152, 152))
+            self.tela.blit(msg_surf, (150, 150))
 
      
-        if self.fase_completa:                     #fase completa
-            fase_texto_surf = self.fonte.render(f"Você venceu! Colete a arma!", True, (0, 255, 0))
-            fase_texto_sombra = self.fonte.render("Você venceu! Colete a arma!", True, self.COR_SOMBRA)
+        elif self.fase_completa1 and not self.revolver_coletado:
+            
+            mensagem = "Você venceu a primeira fase! Colete a arma!"
+                      
+            fase_texto_surf = self.fonte_pequena.render(mensagem, True, (0, 255, 0))
+            fase_texto_sombra = self.fonte_pequena.render(mensagem, True, self.COR_SOMBRA)
+            
+            largura_texto = fase_texto_surf.get_width() #witdth descobre quantos pixels de largura tem o texto, pra centralizar
+            posicao_x = (800 - largura_texto) // 2 #800 é a largura da tela
+            posicao_y = 150
 
-            self.tela.blit(fase_texto_sombra, (202, 52))
-            self.tela.blit(fase_texto_surf, (200, 50))
+            self.tela.blit(fase_texto_sombra, (posicao_x + 2, posicao_y + 2))
+            self.tela.blit(fase_texto_surf, (posicao_x, posicao_y))
 
+        elif self.fase_completa2 and not self.espingarda_coletada:
+            mensagem = "Você venceu a segunda fase! Colete a arma! Agora você vai enfrentar o inimigo final!"
+            fase_texto_surf = self.fonte_pequena.render(mensagem, True, (0, 255, 0))
+            fase_texto_sombra = self.fonte_pequena.render(mensagem, True, self.COR_SOMBRA)
+            largura_texto = fase_texto_surf.get_width()
+            posicao_x = (800 - largura_texto) // 2
+            posicao_y = 150
+
+            self.tela.blit(fase_texto_sombra, (posicao_x + 2, posicao_y + 2))
+            self.tela.blit(fase_texto_surf, (posicao_x, posicao_y))
         
-        if self.player.vida_jogador <= 0:           #derrota
+        if self.player.vida_jogador == 0:           #derrota
             texto_fim = self.fonte_grande.render("Game Over", True, (255, 0, 0))
             fim_sombra = self.fonte_grande.render("Game Over", True, self.COR_SOMBRA)
 
