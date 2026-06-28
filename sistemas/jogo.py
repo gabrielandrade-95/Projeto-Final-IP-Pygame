@@ -5,7 +5,7 @@ import math
 
 from entidades.jogador import Jogador
 from entidades.projetil import Projetil
-from entidades.inimigos import Inimigo
+from entidades.inimigos import Inimigo, InimigoRapido, Boss
 from sistemas.coletaveis import Peixeira, Revolver, Espingarda, Inventario
 
 
@@ -33,6 +33,7 @@ class Jogo:
         self.fase_completa1 = False
         self.fase_completa2 = False
         self.fase_completa3 = False
+        self.inicio_fase_3 = False  # sinaliza quando o boss deve ser criado
 
         self.peixeira_coletada = False
         self.revolver_coletado = False
@@ -144,7 +145,7 @@ class Jogo:
             ]
         elif direcao == "baixo":
             return [
-                Projetil(px, py, direcao, 0,      v_base),
+                Projetil(px, py, direcao, 0,       v_base),
                 Projetil(px, py, direcao, -v_diag, v_base),
                 Projetil(px, py, direcao,  v_diag, v_base),
             ]
@@ -197,7 +198,7 @@ class Jogo:
             return
 
         # movimento
-        self.player.mover()
+        self.player.mover(self.grupo_inimigos)
         self.grupo_projeteis.update()
 
         # atualizar inimigos
@@ -211,6 +212,11 @@ class Jogo:
         self._processar_coletaveis()
         self._checar_progressao_fases()
         self._spawnar_inimigos()
+
+        # spawna o boss uma única vez após coletar a espingarda
+        if self.espingarda_coletada and not self.fase_completa3 and self.inicio_fase_3:
+            self.criar_boss()
+            self.inicio_fase_3 = False
 
     def _checar_colisoes(self):
         # ve se a bala pegou no inimigo
@@ -249,25 +255,25 @@ class Jogo:
             self.kills = 0
         elif self.fase_completa1 and not self.fase_completa2 and self.kills >= 10:
             self.fase_completa2 = True
+            self.inicio_fase_3 = True  # sinaliza para criar o boss na próxima fase
             self.grupo_inimigos.empty()
             self.kills = 0
-        elif self.fase_completa2 and not self.fase_completa3 and self.kills >= 10:
+        elif self.fase_completa2 and not self.fase_completa3 and self.kills >= 1:  # basta matar o boss
             self.fase_completa3 = True
             self.grupo_inimigos.empty()
             self.kills = 0
 
     def _spawnar_inimigos(self):
-        # spawnar os bixo
+        # spawnar os bixo (só para fase 1 e 2, fase 3 usa criar_boss)
         if len(self.grupo_inimigos) >= 5:
             return
 
         # só aparece os inimigos se tiver coletado a arma da fase E não estiver na fase completa
-        deve_spawnar = (
-            (self.peixeira_coletada and not self.fase_completa1) or
-            (self.revolver_coletado  and not self.fase_completa2) or
-            (self.espingarda_coletada and not self.fase_completa3)
-        )
-        if not deve_spawnar:
+        if self.peixeira_coletada and not self.fase_completa1:
+            tipo_inimigo = Inimigo
+        elif self.revolver_coletado and not self.fase_completa2:
+            tipo_inimigo = InimigoRapido
+        else:
             return
 
         borda = random.choice(["topo", "baixo", "esquerda", "direita"])
@@ -280,7 +286,48 @@ class Jogo:
         else:
             x, y = random.randint(0, 780), 620
 
-        self.grupo_inimigos.add(Inimigo(x, y))
+        self.grupo_inimigos.add(tipo_inimigo(x, y))
+
+    def criar_boss(self):
+        # spawna o boss em uma borda aleatória
+        borda = random.choice(["topo", "baixo", "esquerda", "direita"])
+        if borda == "esquerda":
+            x, y = -20, random.randint(0, 580)
+        elif borda == "direita":
+            x, y = 820, random.randint(0, 580)
+        elif borda == "topo":
+            x, y = random.randint(0, 780), -20
+        else:
+            x, y = random.randint(0, 780), 620
+        self.grupo_inimigos.add(Boss(x, y))
+
+    def barrinha_vida_player(self):
+        largura = 300
+        altura = 20
+
+        preenchimento = (self.player.vida_jogador / 1000) * largura
+        preenchimento = min(preenchimento, largura)
+
+        pygame.draw.rect(self.tela, (100, 0, 0), (10, 10, largura, altura))          # fundo vermelho escuro
+        pygame.draw.rect(self.tela, (0, 255, 0), (10, 10, preenchimento, altura))    # vida atual verde
+        pygame.draw.rect(self.tela, (255, 255, 255), (10, 10, largura, altura), 2)   # borda branca
+
+    def barrinha_vida_boss(self):
+        for inimigo in self.grupo_inimigos:
+            if isinstance(inimigo, Boss):
+                boss = inimigo
+
+                largura = 150
+                altura = 15
+                x = boss.rect.centerx - (largura // 2)
+                y = boss.rect.y - 30
+
+                preenchimento = (boss.vida / 30) * largura
+                preenchimento = min(preenchimento, largura)
+
+                pygame.draw.rect(self.tela, (100, 0, 0), (x, y, largura, altura))         # fundo vermelho escuro
+                pygame.draw.rect(self.tela, (255, 0, 0), (x, y, preenchimento, altura))   # vida atual vermelha
+                pygame.draw.rect(self.tela, (255, 255, 255), (x, y, largura, altura), 2)  # borda branca
 
     # ------------------------------------------------------------------ #
     #  DESENHO                                                             #
@@ -316,6 +363,9 @@ class Jogo:
             pygame.draw.polygon(surf_arco, (255, 255, 255, 80), self.golpe_peixeira)
             self.tela.blit(surf_arco, (0, 0))
 
+        # barrinha de vida do boss
+        self.barrinha_vida_boss()
+
         # desenha o inventário (HUD das armas)
         self.inventario.desenhar_hud(self.tela)
 
@@ -328,10 +378,12 @@ class Jogo:
         self.tela.blit(surf, pos)
 
     def _desenhar_hud(self):
-        # kills
-        self._desenhar_texto_com_sombra(self.fonte, f"Kills: {self.kills}/10", self.COR_TEXTO, (10, 10))
-        # vida
-        self._desenhar_texto_com_sombra(self.fonte, f"Vida: {int(self.player.vida_jogador)}", self.COR_TEXTO, (10, 50))
+        # barrinha de vida do player
+        self.barrinha_vida_player()
+
+        # kills (só mostra nas fases 1 e 2, o boss não precisa de contador)
+        if not self.fase_completa2:
+            self._desenhar_texto_com_sombra(self.fonte, f"Kills: {self.kills}/10", self.COR_TEXTO, (10, 48))
 
     def _desenhar_mensagens(self):
         # msg antes de pegar a peixeira
@@ -339,7 +391,7 @@ class Jogo:
             self._desenhar_texto_com_sombra(self.fonte, "Colete a Peixeira para começar!", (255, 255, 0), (150, 150))
 
         elif self.fase_completa1 and not self.revolver_coletado:
-            mensagem = "Você venceu a primeira fase! Colete o seu Revolver!"
+            mensagem = "Você venceu a primeira fase! Colete a arma!"
             surf = self.fonte_pequena.render(mensagem, True, (0, 255, 0))
             # width descobre quantos pixels de largura tem o texto, pra centralizar
             posicao_x = (800 - surf.get_width()) // 2  # 800 é a largura da tela
@@ -347,7 +399,7 @@ class Jogo:
             self._desenhar_texto_com_sombra(self.fonte_pequena, mensagem, (0, 255, 0), (posicao_x, posicao_y))
 
         elif self.fase_completa2 and not self.espingarda_coletada:
-            mensagem = "Segunda fase vencida! Colete a Espingarda para o inimigo final!"
+            mensagem = "Você venceu a segunda fase! Colete a arma! Agora você vai enfrentar o inimigo final!"
             surf = self.fonte_pequena.render(mensagem, True, (0, 255, 0))
             posicao_x = (800 - surf.get_width()) // 2
             posicao_y = 150
