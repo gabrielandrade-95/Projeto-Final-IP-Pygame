@@ -1,5 +1,6 @@
 import pygame
 import sys
+from entidades.novo_inimigo import Inimigo, InimigoRapido, Boss
 
 class Jogador:
     def __init__(self, x, y):
@@ -14,12 +15,15 @@ class Jogador:
         self.ultimo_tiro = 0      # Relógio zera quando o jogo começa
         self.vida_jogador = 1000
         
+        
                 
         # Criar o rect para colisões
         self.rect = pygame.Rect(self.x, self.y, self.largura, self.altura)
 
-    def mover(self):
+    def mover(self, grupo_inimigos=None):
         teclas = pygame.key.get_pressed()
+        vel_y = 0
+        vel_y = 0
 
         if teclas[pygame.K_LEFT] or teclas[pygame.K_a]:
             if self.x > 0 :
@@ -40,21 +44,51 @@ class Jogador:
             if self.y < 570 :
                 self.y += self.velocidade
                 self.direcao_da_frente = "baixo"
+                
+        if grupo_inimigos:
+            for inimigo in grupo_inimigos:
+                if self.rect.colliderect(inimigo.rect):
+                    
+                    d_X = self.rect.centerx - inimigo.rect.centerx
+                    d_y = self.rect.centery - inimigo.rect.centery
+                    dist = (d_X**2 + d_y**2) ** 0.5
+                    
+                    if dist != 0:
+                        vel_y += (d_X / dist) * 3
+                        vel_y += (d_y / dist) * 3
+                        
+                        
         # atualiza o rect do jogador após o movimento
+        self.x += vel_y
+        self.y += vel_y
         self.rect.x = self.x
         self.rect.y = self.y
     
     def dano_jogador(self, grupo_inimigos):
-        tempo_atual = pygame.time.get_ticks()
-        
-        for inimigo in grupo_inimigos:
-            if self.rect.colliderect(inimigo.rect):
+            tempo_atual = pygame.time.get_ticks()
+            
+            posicao_jogador = self.rect.centerx  # pega a posição X do jogador
+            for inimigo in grupo_inimigos:
+                if isinstance(inimigo, Boss):
+                    posicao_boss = inimigo.rect.centerx  # pega a posição X do boss
+                    break 
+            else:
+                posicao_boss = None  #se não tiver boss, a posicao é none
                 
-                if tempo_atual - inimigo.ultimo_dano >= inimigo.cooldown_dano:
-                    self.vida_jogador -= 0.35
-                    inimigo.ultimo_dano = tempo_atual
-                    return True
-        return False
+            for inimigo in grupo_inimigos:
+                if isinstance(inimigo, Boss):
+                    if posicao_boss != None and abs(posicao_jogador - posicao_boss) <= 50:
+                        if tempo_atual - inimigo.ultimo_dano >= inimigo.cooldown_dano:
+                            self.vida_jogador -= 2
+                            inimigo.ultimo_dano = tempo_atual
+                            return True
+                else:
+                    if self.rect.colliderect(inimigo.rect):
+                        if tempo_atual - inimigo.ultimo_dano >= inimigo.cooldown_dano:
+                                self.vida_jogador -= 0.35
+                                inimigo.ultimo_dano = tempo_atual
+                                return True
+            return False
 
     def desenhar(self, tela):
         retangulo = pygame.Rect(self.x, self.y, self.largura, self.altura)

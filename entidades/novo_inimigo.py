@@ -56,4 +56,38 @@ class Inimigo(pygame.sprite.Sprite) :
             return True
         return False
     
- 
+
+class InimigoRapido(Inimigo):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.image = pygame.Surface((20, 20))
+        self.image.fill((0, 255, 0))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.velocidade = 2.5  # o inimigo da segunda fase é mais rápido
+        
+class Boss(Inimigo):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.image = pygame.Surface((50, 50))
+        self.image.fill((0, 0, 255))  # cor do boss
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.velocidade = 1.0
+        self.vida = 30
+        
+    def dano_inimigo(self, projetil):
+        #botei isso pq se não quando ele tomar um tiro ele morre direto
+      return self.dano_boss(projetil)  # Chama o método de dano do boss
+        
+    def dano_boss (self, projetil):
+        if self.rect.colliderect(projetil.rect):  # Se o retângulo do boss colidir com o retângulo do projetil
+            self.vida -= 1.5  # Reduz a vida do boss
+            projetil.kill()  # Mata o projetil
+            if self.vida <= 0:
+                self.kill()  # Mata o boss se a vida chegar a zero
+                return True
+        return False
+    

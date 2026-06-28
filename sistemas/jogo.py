@@ -3,7 +3,7 @@ import sys
 import random
 from Mecanicas.mecanicaPlayer import Jogador
 from entidades.projetil import Projetil
-from entidades.novo_inimigo import Inimigo
+from entidades.novo_inimigo import Inimigo, InimigoRapido, Boss
 from sistemas.coletaveis import Peixeira, Revolver, Espingarda, Inventario
 
 
@@ -33,6 +33,7 @@ class Jogo:
         self.fase_completa1 = False
         self.fase_completa2 = False
         self.fase_completa3 = False
+        self.inicio_fase_3 = False
 
         self.peixeira_coletada = False
         self.revolver_coletado = False
@@ -94,7 +95,7 @@ class Jogo:
                             self.player.ultimo_tiro = tempo_atual
 
 
-    def onda_inimigos(self, grupo_inimigos, jogador):
+    def onda_inimigos(self, grupo_inimigos, jogador, inimigo=None):
         #spawnar os bixo
         if len(grupo_inimigos) < 5:
             x = 0
@@ -109,7 +110,15 @@ class Jogo:
             else:
                 x, y = random.randint(0, 780), 620
 
-            novo_inimigo = Inimigo(x, y)
+            if not self.fase_completa1:
+                novo_inimigo = Inimigo(x, y)
+            
+            elif self.fase_completa1 and not self.fase_completa2:
+                novo_inimigo = InimigoRapido(x, y)
+            
+            elif inimigo == "boss":
+                novo_inimigo = Boss(x, y)
+                
             grupo_inimigos.add(novo_inimigo)
 
     def checar_colisoes(self):
@@ -134,7 +143,39 @@ class Jogo:
         if (self.fase_completa2) and (not self.fase_completa3) and (not self.espingarda_coletada):
             espingarda = Espingarda(400, 250)
             self.grupo_coletaveis.add(espingarda)
-
+            
+    def criar_boss(self):
+        self.onda_inimigos(self.grupo_inimigos, self.player, inimigo="boss")
+    
+    def barrinha_vida_player (self):
+        largura = 300
+        altura = 20
+        
+        preenchimento = (self.player.vida_jogador / 1000) * largura
+        preenchimento = min(preenchimento, largura)
+        
+        pygame.draw.rect(self.tela, (100, 0, 0), (10, 10, largura, altura))
+        pygame.draw.rect(self.tela, (0, 255, 0), (10, 10, preenchimento, altura))
+        pygame.draw.rect(self.tela, (255, 255, 255), (10, 10, largura, altura), 2)
+        
+    def barrinha_vida_boss (self):
+        for inimigo in self.grupo_inimigos:
+            if isinstance(inimigo, Boss):
+                boss = inimigo
+                
+                largura = 150
+                altura = 15
+                x = boss.rect.centerx - (largura // 2)
+                y = boss.rect.y - 30
+                
+                preenchimento = (boss.vida / 30) * largura
+                preenchimento = min(preenchimento, largura)
+                
+                pygame.draw.rect(self.tela, (100, 0, 0), (x, y, largura, altura))
+                pygame.draw.rect(self.tela, (255, 0, 0), (x, y, preenchimento, altura))
+                pygame.draw.rect(self.tela, (255, 255, 255), (x, y, largura, altura), 2)
+                
+    
     def atualizar(self):
         #se morrer para tudo
         if self.player.vida_jogador <= 0:
@@ -142,15 +183,13 @@ class Jogo:
             return
 
         #movimento
-        self.player.mover()
+        self.player.mover(self.grupo_inimigos)
         self.grupo_projeteis.update()
 
         #colisoes
         self.checar_colisoes()
         self.player.dano_jogador(self.grupo_inimigos)
         
-        
-
         #atualizar inimigos
         for inimigo in self.grupo_inimigos:
             inimigo.update(self.player, self.grupo_inimigos)
@@ -180,6 +219,7 @@ class Jogo:
             self.kills = 0
         elif (self.fase_completa2 == False) and (self.fase_completa1 == True) and self.kills >= 10:
             self.fase_completa2 = True
+            self.inicio_fase_3 = True
             self.grupo_inimigos.empty()
             self.kills = 0
         elif (self.fase_completa3 == False) and (self.fase_completa2 == True) and self.kills >= 10:
@@ -193,6 +233,10 @@ class Jogo:
         
         elif self.revolver_coletado and not self.fase_completa2:
             self.onda_inimigos(self.grupo_inimigos, self.player)
+        
+        elif self.espingarda_coletada and not self.fase_completa3 and self.inicio_fase_3:
+            self.criar_boss()
+            self.inicio_fase_3 = False
 
     def desenhar(self):
         #fundo do jogo
@@ -213,41 +257,30 @@ class Jogo:
         #desenhar o coletavel da faca
         for coletavel in self.grupo_coletaveis:
             coletavel.desenhar(self.tela)
+        
+        #barrinha de vida do player
+        self.barrinha_vida_player()
+        
+        if self.fase_completa2 == False:
+            kills_surf = self.fonte.render(f"Kills: {self.kills}/10", True, self.COR_TEXTO)
+            kills_sombra = self.fonte.render(f"Kills: {self.kills}/10", True, self.COR_SOMBRA)
+            self.tela.blit(kills_sombra, (12, 50))
+            self.tela.blit(kills_surf, (10, 48))
 
-        #mostrar a hud
-        kills_surf = self.fonte.render(f"Kills: {self.kills}/10", True, self.COR_TEXTO)     #kills
-        kills_sombra = self.fonte.render(f"Kills: {self.kills}/10", True, self.COR_SOMBRA)
-
-        self.tela.blit(kills_sombra, (12, 12))
-        self.tela.blit(kills_surf, (10, 10))
-
-     
-        vida_surf = self.fonte.render(f"Vida: {int(self.player.vida_jogador)}", True, self.COR_TEXTO)  #vida
-        vida_sombra = self.fonte.render(f"Vida: {int(self.player.vida_jogador)}", True, self.COR_SOMBRA)
-
-        self.tela.blit(vida_sombra, (12, 52))
-        self.tela.blit(vida_surf, (10, 50))
-
-     
        
-     
         if not self.peixeira_coletada and not self.fase_completa1:           #msg antes de pegara pexeira
             msg_surf = self.fonte.render(f"Colete a Peixeira para começar!", True, (255, 255, 0))
             msg_sombra = self.fonte.render(f"Colete a Peixeira para começar!", True, self.COR_SOMBRA)
-            self.tela.blit(msg_sombra, (152, 152))
-            self.tela.blit(msg_surf, (150, 150))
+            self.tela.blit(msg_sombra, (152, 202))
+            self.tela.blit(msg_surf, (150, 200))
 
-     
         elif self.fase_completa1 and not self.revolver_coletado:
-            
             mensagem = "Você venceu a primeira fase! Colete a arma!"
-                      
             fase_texto_surf = self.fonte_pequena.render(mensagem, True, (0, 255, 0))
             fase_texto_sombra = self.fonte_pequena.render(mensagem, True, self.COR_SOMBRA)
-            
-            largura_texto = fase_texto_surf.get_width() #witdth descobre quantos pixels de largura tem o texto, pra centralizar
-            posicao_x = (800 - largura_texto) // 2 #800 é a largura da tela
-            posicao_y = 150
+            largura_texto = fase_texto_surf.get_width()
+            posicao_x = (800 - largura_texto) // 2
+            posicao_y = 200
 
             self.tela.blit(fase_texto_sombra, (posicao_x + 2, posicao_y + 2))
             self.tela.blit(fase_texto_surf, (posicao_x, posicao_y))
@@ -258,11 +291,12 @@ class Jogo:
             fase_texto_sombra = self.fonte_pequena.render(mensagem, True, self.COR_SOMBRA)
             largura_texto = fase_texto_surf.get_width()
             posicao_x = (800 - largura_texto) // 2
-            posicao_y = 150
+            posicao_y = 200
 
             self.tela.blit(fase_texto_sombra, (posicao_x + 2, posicao_y + 2))
             self.tela.blit(fase_texto_surf, (posicao_x, posicao_y))
         
+       
         if self.player.vida_jogador == 0:           #derrota
             texto_fim = self.fonte_grande.render("Game Over", True, (255, 0, 0))
             fim_sombra = self.fonte_grande.render("Game Over", True, self.COR_SOMBRA)
@@ -270,6 +304,11 @@ class Jogo:
             self.tela.blit(fim_sombra, (203, 253))      #bagulho de sombra do game over
             self.tela.blit(texto_fim, (200, 250))
 
-        self.inventario.desenhar_hud(self.tela)          #desenha o inventário (HUD das armas)
+      
+        #barrinha de vida do boss
+        self.barrinha_vida_boss()
+        
+        #desenha o inventário (HUD das armas)
+        self.inventario.desenhar_hud(self.tela)
 
         pygame.display.flip()

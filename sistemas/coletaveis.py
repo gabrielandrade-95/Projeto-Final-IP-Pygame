@@ -1,8 +1,6 @@
 import pygame
 from abc import ABC, abstractmethod
 from sistemas.colisao import checar_colisao_retangulos
-
-
 class ColetavelBase(pygame.sprite.Sprite, ABC):
 
     def __init__(self, x, y, nome, caminho_imagem):
@@ -12,7 +10,7 @@ class ColetavelBase(pygame.sprite.Sprite, ABC):
         self.nome = nome
         self.coletado = False
 
-        try:                                            #cria o "erro"
+        try: #cria o "erro"
             self.imagem_original = pygame.image.load(caminho_imagem).convert_alpha()
             self.imagem = pygame.transform.scale(self.imagem_original, (40, 40))
 
