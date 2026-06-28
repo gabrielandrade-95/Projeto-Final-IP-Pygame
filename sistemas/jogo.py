@@ -84,12 +84,46 @@ class Jogo:
                 if evento.key == pygame.K_SPACE:
                     tempo_atual = pygame.time.get_ticks()
                     if tempo_atual - self.player.ultimo_tiro >= self.player.cooldown_tiro:
-                        if self.inventario.arma_ativa is not None:
-                            px = self.player.x
-                            py = self.player.y
+                        arma_atual = self.inventario.arma_ativa
+                        
+                        if arma_atual is not None:
+                            px = self.player.x + 15
+                            py = self.player.y + 15
                             direcao = self.player.direcao_da_frente
-                            novo_tiro = Projetil(px + 15, py + 15, direcao)
-                            self.grupo_projeteis.add(novo_tiro)
+                            
+                            # comportamento da pistola
+                            if arma_atual in ["Peixeira", "Revolver"]:
+                                novo_tiro = Projetil(px, py, direcao)
+                                self.grupo_projeteis.add(novo_tiro)
+                            
+                            # comportamento da espingarda/doze/shotgun
+                            elif arma_atual == "Espingarda":
+                                v_base = 10  # Velocidade principal
+                                v_diag = 3  # Desvio da diagonal
+                                
+                                if direcao == "direita":
+                                    tiro1 = Projetil(px, py, direcao, v_base, 0)       # Reto
+                                    tiro2 = Projetil(px, py, direcao, v_base, -v_diag) # Diagonal Cima
+                                    tiro3 = Projetil(px, py, direcao, v_base, v_diag)  # Diagonal Baixo
+                                    
+                                elif direcao == "esquerda":
+                                    tiro1 = Projetil(px, py, direcao, -v_base, 0)
+                                    tiro2 = Projetil(px, py, direcao, -v_base, -v_diag)
+                                    tiro3 = Projetil(px, py, direcao, -v_base, v_diag)
+
+                                elif direcao == "cima":
+                                    tiro1 = Projetil(px, py, direcao, 0, -v_base)
+                                    tiro2 = Projetil(px, py, direcao, -v_diag, -v_base) # Diagonal Esquerda
+                                    tiro3 = Projetil(px, py, direcao, v_diag, -v_base)  # Diagonal Direita
+
+                                elif direcao == "baixo":
+                                    tiro1 = Projetil(px, py, direcao, 0, v_base)
+                                    tiro2 = Projetil(px, py, direcao, -v_diag, v_base)
+                                    tiro3 = Projetil(px, py, direcao, v_diag, v_base)
+                                
+                                # Adiciona os 3 tiros ao grupo
+                                self.grupo_projeteis.add(tiro1, tiro2, tiro3)
+
                             self.player.ultimo_tiro = tempo_atual
 
     def onda_inimigos(self, grupo_inimigos, jogador):
