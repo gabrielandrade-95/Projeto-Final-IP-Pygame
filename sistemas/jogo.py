@@ -4,7 +4,7 @@ import random
 from Mecanicas.mecanicaPlayer import Jogador
 from entidades.projetil import Projetil
 from entidades.novo_inimigo import Inimigo, InimigoRapido, Boss
-from sistemas.coletaveis import Peixeira, Revolver, Espingarda, Inventario
+from sistemas.coletaveis import Peixeira, Revolver, Espingarda, Inventario, Pitu
 
 
 class Jogo:
@@ -38,6 +38,7 @@ class Jogo:
         self.peixeira_coletada = False
         self.revolver_coletado = False
         self.espingarda_coletada = False
+        self.pitu_coletada = False
 
         #cria a peixeira no chão 
         peixeira = Peixeira(400, 250)
@@ -127,6 +128,7 @@ class Jogo:
             for inimigo in self.grupo_inimigos:
                 if inimigo.dano_inimigo(projetil):
                     self.kills += 1
+        
 
     def checar_vida(self):
         #ver se morreu
@@ -144,6 +146,23 @@ class Jogo:
             espingarda = Espingarda(400, 250)
             self.grupo_coletaveis.add(espingarda)
             
+    def criar_pitu (self):
+        if (self.fase_completa1) and (not self.fase_completa2) and (not self.pitu_coletada):
+            pitu = Pitu(350, 125)
+            self.grupo_coletaveis.add(pitu)
+        if (self.fase_completa2) and (not self.fase_completa3) and (not self.pitu_coletada):
+            pitu = Pitu(350, 125)
+            self.grupo_coletaveis.add(pitu)
+        
+    def coletar_pitu (self, grupo_coletaveis):
+        for coletavel in grupo_coletaveis:
+            if isinstance(coletavel, Pitu) and not self.pitu_coletada:
+                if self.player.rect.colliderect(coletavel.obter_rect()):
+                    self.player.vida_jogador += (self.player.vida_jogador) * 0.5
+                    self.player.vida_jogador = min(self.player.vida_jogador, 10) #limita a vida do jogador a 10
+                    return True
+        return False
+                    
     def criar_boss(self):
         self.onda_inimigos(self.grupo_inimigos, self.player, inimigo="boss")
     
@@ -151,7 +170,7 @@ class Jogo:
         largura = 300
         altura = 20
         
-        preenchimento = (self.player.vida_jogador / 1000) * largura
+        preenchimento = (self.player.vida_jogador / 10) * largura
         preenchimento = min(preenchimento, largura)
         
         pygame.draw.rect(self.tela, (100, 0, 0), (10, 10, largura, altura))
@@ -189,6 +208,7 @@ class Jogo:
         #colisoes
         self.checar_colisoes()
         self.player.dano_jogador(self.grupo_inimigos)
+        self.coletar_pitu(self.grupo_coletaveis)
         
         #atualizar inimigos
         for inimigo in self.grupo_inimigos:
@@ -197,7 +217,8 @@ class Jogo:
         #vendo se já pode criar revolver ou espingarda
         self.criar_revolver()
         self.criar_espingarda()
-
+        self.criar_pitu()
+        
         #processar a coleta de itens
         for coletavel in self.grupo_coletaveis:
             coletavel.processar_coleta(self.player, self.inventario)
@@ -211,6 +232,9 @@ class Jogo:
             
             elif isinstance(coletavel, Espingarda) and coletavel.coletado:
                 self.espingarda_coletada = True
+                
+            elif isinstance(coletavel, Pitu) and coletavel.coletado:
+                self.pitu_coletada = True
 
         # verificando se a fase foi completada
         if self.fase_completa1 == False and self.kills >= 10:
@@ -220,6 +244,7 @@ class Jogo:
         elif (self.fase_completa2 == False) and (self.fase_completa1 == True) and self.kills >= 10:
             self.fase_completa2 = True
             self.inicio_fase_3 = True
+            self.pitu_coletada = False
             self.grupo_inimigos.empty()
             self.kills = 0
         elif (self.fase_completa3 == False) and (self.fase_completa2 == True) and self.kills >= 10:

@@ -84,7 +84,7 @@ class Boss(Inimigo):
         
     def dano_boss (self, projetil):
         if self.rect.colliderect(projetil.rect):  # Se o retângulo do boss colidir com o retângulo do projetil
-            self.vida -= 1.5  # Reduz a vida do boss
+            self.vida -= 1  # Reduz a vida do boss
             projetil.kill()  # Mata o projetil
             if self.vida <= 0:
                 self.kill()  # Mata o boss se a vida chegar a zero

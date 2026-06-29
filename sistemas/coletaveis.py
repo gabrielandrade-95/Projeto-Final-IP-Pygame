@@ -14,7 +14,7 @@ class ColetavelBase(pygame.sprite.Sprite, ABC):
             self.imagem_original = pygame.image.load(caminho_imagem).convert_alpha()
             self.imagem = pygame.transform.scale(self.imagem_original, (40, 40))
 
-        except pygame.error:
+        except (pygame.error, FileNotFoundError):
             self.imagem = pygame.Surface((30, 30))
             self.imagem.fill((255, 0, 0))
 
@@ -56,6 +56,12 @@ class Revolver(ColetavelBase):
 class Espingarda(ColetavelBase):
     def __init__(self, x, y):
         super().__init__(x, y, "Espingarda", "assets/espingarda.png")
+
+class Pitu (ColetavelBase):
+    def __init__(self, x, y):
+        super().__init__(x, y, "Pitu", "assets/Pitu.png")
+    
+    
 
 
 #criar o inv

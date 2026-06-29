@@ -13,7 +13,7 @@ class Jogador:
         self.direcao_da_frente = "direita"  # Inicialmente, o jogador está olhando para a direita
         self.cooldown_tiro = 300  # Tempo em milissegundos (300 = meio segundo)
         self.ultimo_tiro = 0      # Relógio zera quando o jogo começa
-        self.vida_jogador = 1000
+        self.vida_jogador = 10
         
         
                 
@@ -89,6 +89,9 @@ class Jogador:
                                 inimigo.ultimo_dano = tempo_atual
                                 return True
             return False
+    
+   
+
 
     def desenhar(self, tela):
         retangulo = pygame.Rect(self.x, self.y, self.largura, self.altura)
