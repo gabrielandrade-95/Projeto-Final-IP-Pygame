@@ -1,3 +1,4 @@
+#main.py
 #esse arquivo será onde o jogo irá ser inicializado
 import sys
 from sistemas.jogo import Jogo

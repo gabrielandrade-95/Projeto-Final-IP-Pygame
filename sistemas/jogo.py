@@ -1,3 +1,4 @@
+#jogo.py
 import pygame
 import sys
 import random
@@ -163,6 +164,7 @@ class Jogo:
         metade = angulo_arco / 2  # 60 graus para cada lado
 
         # ve se a peixeira pegou no inimigo
+        dano_peixeira = 3  # dano por golpe da peixeira
         for inimigo in list(self.grupo_inimigos):
             ex = inimigo.rect.centerx - cx
             ey = inimigo.rect.centery - cy
@@ -174,8 +176,8 @@ class Jogo:
                 if diff > 180:
                     diff -= 360
                 if abs(diff) <= metade:
-                    inimigo.kill()
-                    self.kills += 1
+                    if inimigo.receber_dano(dano_peixeira):
+                        self.kills += 1
 
         # gera os pontos do polígono para o efeito visual do arco
         pontos = [(cx, cy)]

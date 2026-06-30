@@ -1,3 +1,4 @@
+#inimigos.py
 import pygame
 
 
@@ -5,13 +6,13 @@ class Inimigo(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
 
+        self.velocidade = 1.5 # Velocidade do inimigo é 1.5
+        self.vida = 1         # Vida do inimigo (morre em 1 tiro)
         self.image = pygame.Surface((20,20)) # Os inimigos são quadraddos 20x20
         self.image.fill((255,0,0)) # Eles são vermelhos
         self.rect = self.image.get_rect() # A função get_rect gera um retângulo que cobre toda a imagem do inimigo que vai servir para as colisões
         self.rect.x = x # retangulo de colisão tem largura X
         self.rect.y = y # retangulo de colisão tem altura Y
-
-        self.velocidade = 1.5 # Velocidade do inimigo é 1.5
 
         # Variáveis para controle de dano
         self.ultimo_dano = 0
@@ -47,45 +48,48 @@ class Inimigo(pygame.sprite.Sprite):
         self.rect.x += vel_x
         self.rect.y += vel_y
 
+    def receber_dano(self, dano):
+        self.vida -= dano
+        if self.vida <= 0:
+            self.kill() # Mata o inimigo
+            return True
+        return False
+
     def dano_inimigo(self, projetil):
         if self.rect.colliderect(projetil.rect): # Se o retângulo do inimigo colidir com o retângulo do projetil
-            self.kill() # Mata o inimigo
             projetil.kill() # Mata o projetil
-            return True
+            return self.receber_dano(1) # cada projétil faz 1 de dano
         return False
 
 
 class InimigoRapido(Inimigo):
     def __init__(self, x, y):
         super().__init__(x, y)
+
+        self.velocidade = 2.5 # o inimigo da segunda fase é mais rápido
+        self.vida = 1
+
         self.image = pygame.Surface((20, 20))
         self.image.fill((0, 255, 0))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.velocidade = 2.5  # o inimigo da segunda fase é mais rápido
 
 
 class Boss(Inimigo):
     def __init__(self, x, y):
         super().__init__(x, y)
+
+        self.velocidade = 1.0 # Velocidade do boss é 1.0
+        self.vida = 30 # Vida do boss
         self.image = pygame.Surface((50, 50))
         self.image.fill((0, 0, 255))  # cor do boss
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.velocidade = 1.0
-        self.vida = 30
 
     def dano_inimigo(self, projetil):
-        #botei isso pq se não quando ele tomar um tiro ele morre direto
-        return self.dano_boss(projetil)  # Chama o método de dano do boss
-
-    def dano_boss(self, projetil):
         if self.rect.colliderect(projetil.rect):  # Se o retângulo do boss colidir com o retângulo do projetil
-            self.vida -= 1.5  # Reduz a vida do boss
-            projetil.kill()   # Mata o projetil
-            if self.vida <= 0:
-                self.kill()   # Mata o boss se a vida chegar a zero
-                return True
+            projetil.kill()  # Mata o projetil
+            return self.receber_dano(1.5)  # cada projétil faz 1.5 de dano no boss
         return False
