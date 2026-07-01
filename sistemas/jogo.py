@@ -7,7 +7,7 @@ import math
 from entidades.jogador import Jogador
 from entidades.projetil import Projetil
 from entidades.inimigos import Inimigo, InimigoRapido, Boss
-from sistemas.coletaveis import Peixeira, Revolver, Espingarda, Inventario
+from sistemas.coletaveis import Peixeira, Revolver, Espingarda, Inventario, Pitu
 
 
 class Jogo:
@@ -41,6 +41,9 @@ class Jogo:
         self.espingarda_coletada = False
         self.revolver_criado = False
         self.espingarda_criada = False
+        self.pitu_coletada = False
+        self.pitu_fase1 = False
+        self.pitu_fase2 = False
 
         # controle do arco da peixeira
         self.golpe_peixeira = None
@@ -65,17 +68,12 @@ class Jogo:
         self.COR_TEXTO = (255, 255, 255)  # branco
         self.COR_SOMBRA = (0, 0, 0)       # preto para sombra
 
-    # ------------------------------------------------------------------ #
-    #  LOOP PRINCIPAL                                                      #
-    # ------------------------------------------------------------------ #
-
     def rodar(self):
         while self.rodando:
             self.checar_eventos()
             self.atualizar()
             self.desenhar()
             self.relogio.tick(60)
-
 
     def checar_eventos(self):
         for evento in pygame.event.get():
@@ -90,9 +88,9 @@ class Jogo:
                 self.inventario.trocar_arma()
 
                 if evento.key == pygame.K_SPACE:
-                    self._atirar()
+                    self.atirar()
 
-    def _atirar(self):
+    def atirar(self):
         tempo_atual = pygame.time.get_ticks()
         if tempo_atual - self.player.ultimo_tiro < self.player.cooldown_tiro:
             return
@@ -104,10 +102,10 @@ class Jogo:
         px = self.player.x + 15
         py = self.player.y + 15
         direcao = self.player.direcao_da_frente
-
+        
         # comportamento da peixeira (corpo a corpo)
         if arma_atual == "Peixeira":
-            self._atacar_peixeira(direcao)
+            self.atacar_peixeira(direcao)
 
         # comportamento da pistola
         elif arma_atual == "Revolver":
@@ -117,13 +115,39 @@ class Jogo:
         elif arma_atual == "Espingarda":
             v_base = 10  # velocidade principal
             v_diag = 3   # desvio da diagonal
-            tiros = self._calcular_tiros_espingarda(px, py, direcao, v_base, v_diag)
+            tiros = self.calcular_tiros_espingarda(px, py, direcao, v_base, v_diag)
             # adiciona os 3 tiros ao grupo
             self.grupo_projeteis.add(*tiros)
 
         self.player.ultimo_tiro = tempo_atual
 
-    def _calcular_tiros_espingarda(self, px, py, direcao, v_base, v_diag):
+    def onda_inimigos(self, grupo_inimigos, jogador, inimigo=None):
+        # spawnar os bixo
+        if len(grupo_inimigos) < 5:
+            x = 0
+            y = 0
+            borda = random.choice(["topo", "baixo", "esquerda", "direita"])
+            if borda == "esquerda":
+                x, y = -20, random.randint(0, 580)
+            elif borda == "direita":
+                x, y = 820, random.randint(0, 580)
+            elif borda == "topo":
+                x, y = random.randint(0, 780), -20
+            else:
+                x, y = random.randint(0, 780), 620
+
+            if not self.fase_completa1:
+                novo_inimigo = Inimigo(x, y)
+            
+            elif self.fase_completa1 and not self.fase_completa2:
+                novo_inimigo = InimigoRapido(x, y)
+            
+            elif inimigo == "boss":
+                novo_inimigo = Boss(x, y)
+                
+            grupo_inimigos.add(novo_inimigo)
+
+    def calcular_tiros_espingarda(self, px, py, direcao, v_base, v_diag):
         if direcao == "direita":
             return [
                 Projetil(px, py, direcao, v_base, 0),        # reto
@@ -150,8 +174,8 @@ class Jogo:
             ]
         return []
 
-    def _atacar_peixeira(self, direcao):
-        alcance = 55      # distância do corte em pixels
+    def atacar_peixeira(self, direcao):
+        alcance = 80      # distância do corte em pixels
         angulo_arco = 120 # graus totais do arco
 
         cx = self.player.x + self.player.largura // 2
@@ -162,7 +186,7 @@ class Jogo:
         metade = angulo_arco / 2  # 60 graus para cada lado
 
         # ve se a peixeira pegou no inimigo
-        dano_peixeira = 3  # dano por golpe da peixeira
+        dano_peixeira = 1  # 1 de dano por golpe (inimigo tem 2 de vida = 2 hits)
         for inimigo in list(self.grupo_inimigos):
             ex = inimigo.rect.centerx - cx
             ey = inimigo.rect.centery - cy
@@ -174,6 +198,7 @@ class Jogo:
                 if diff > 180:
                     diff -= 360
                 if abs(diff) <= metade:
+                    # Aplica o dano no inimigo e computa a kill se ele morrer
                     if inimigo.receber_dano(dano_peixeira):
                         self.kills += 1
 
@@ -186,6 +211,73 @@ class Jogo:
 
         self.golpe_peixeira = pontos
         self.tempo_golpe = pygame.time.get_ticks()
+
+    def checar_vida(self):
+        # ver se morreu
+        if self.player.vida_jogador <= 0:
+            return True
+        return False
+    
+    def criar_revolver(self):
+        # Corrigido: adicionado 'and not self.revolver_criado' para evitar travamento por spawn infinito
+        if (self.fase_completa1) and (not self.fase_completa2) and (not self.revolver_coletado) and (not self.revolver_criado):
+            revolver = Revolver(400, 250)
+            self.grupo_coletaveis.add(revolver)
+            self.revolver_criado = True
+        
+    def criar_espingarda(self):
+        # Corrigido: adicionado 'and not self.espingarda_criada' para evitar travamento por spawn infinito
+        if (self.fase_completa2) and (not self.fase_completa3) and (not self.espingarda_coletada) and (not self.espingarda_criada):
+            espingarda = Espingarda(400, 250)
+            self.grupo_coletaveis.add(espingarda)
+            self.espingarda_criada = True
+            
+    def criar_pitu(self):
+        # Corrigido: adicionado 'and not self.pitu_fase1' para evitar spawn infinito da garrafa
+        if (self.fase_completa1) and (not self.fase_completa2) and (not self.pitu_coletada) and (not self.pitu_fase1):
+            pitu = Pitu(350, 125)
+            self.grupo_coletaveis.add(pitu)
+            self.pitu_fase1 = True
+            
+        # Corrigido: adicionado 'and not self.pitu_fase2' para evitar spawn infinito da garrafa
+        if (self.fase_completa2) and (not self.fase_completa3) and (not self.pitu_coletada) and (not self.pitu_fase2):
+            pitu = Pitu(350, 125)
+            self.grupo_coletaveis.add(pitu)
+            self.pitu_fase2 = True
+
+    def criar_boss(self):
+        self.onda_inimigos(self.grupo_inimigos, self.player, inimigo="boss")
+    
+    def barrinha_vida_player(self):
+        largura = 300
+        altura = 20
+        
+        # Corrigido de 1000 para 10 para preencher de forma correta e proporcional à vida real do player
+        preenchimento = (self.player.vida_jogador / 10) * largura
+        preenchimento = min(preenchimento, largura)
+        
+        pygame.draw.rect(self.tela, (100, 0, 0), (10, 10, largura, altura))          # fundo vermelho escuro
+        pygame.draw.rect(self.tela, (0, 255, 0), (10, 10, preenchimento, altura))    # vida atual verde
+        pygame.draw.rect(self.tela, (255, 255, 255), (10, 10, largura, altura), 2)   # borda branca
+        
+    def barrinha_vida_boss(self):
+        for inimigo in self.grupo_inimigos:
+            if isinstance(inimigo, Boss):
+                boss = inimigo
+                
+                largura = 150
+                altura = 15
+                x = boss.rect.centerx - (largura // 2)
+                y = boss.rect.y - 30
+                
+                # Verifique se o boss tem o atributo 'vida', ajustado para valor máximo (30)
+                if hasattr(boss, 'vida'):
+                    preenchimento = (boss.vida / 30) * largura
+                    preenchimento = min(preenchimento, largura)
+                    
+                    pygame.draw.rect(self.tela, (100, 0, 0), (x, y, largura, altura))         # fundo vermelho escuro
+                    pygame.draw.rect(self.tela, (255, 0, 0), (x, y, preenchimento, altura))   # vida atual vermelha
+                    pygame.draw.rect(self.tela, (255, 255, 255), (x, y, largura, altura), 2)  # borda branca
 
     def atualizar(self):
         # se morrer para tudo
@@ -203,48 +295,49 @@ class Jogo:
             inimigo.update(self.player, self.grupo_inimigos)
 
         # colisoes
-        self._checar_colisoes()
+        self.checar_colisoes()
         self.player.dano_jogador(self.grupo_inimigos)
 
-        self._processar_coletaveis()
-        self._checar_progressao_fases()
-        self._spawnar_inimigos()
+        self.processar_coletaveis()
+        self.checar_progressao_fases()
+        self.spawnar_inimigos()
 
         # spawna o boss uma única vez após coletar a espingarda
         if self.espingarda_coletada and not self.fase_completa3 and self.inicio_fase_3:
             self.criar_boss()
             self.inicio_fase_3 = False
 
-    def _checar_colisoes(self):
+    def checar_colisoes(self):
         # ve se a bala pegou no inimigo
         for projetil in list(self.grupo_projeteis):
             for inimigo in list(self.grupo_inimigos):
                 if inimigo.dano_inimigo(projetil):
                     self.kills += 1
 
-    def _processar_coletaveis(self):
+    def processar_coletaveis(self):
         # processar a coleta de itens
-        for coletavel in self.grupo_coletaveis:
+        for coletavel in list(self.grupo_coletaveis):
             coletavel.processar_coleta(self.player, self.inventario)
 
-            # se coletou a peixeira ativa os inimigos
-            if isinstance(coletavel, Peixeira) and coletavel.coletado:
-                self.peixeira_coletada = True
-            elif isinstance(coletavel, Revolver) and coletavel.coletado:
-                self.revolver_coletado = True
-            elif isinstance(coletavel, Espingarda) and coletavel.coletado:
-                self.espingarda_coletada = True
+            if coletavel.coletado:
+                # se coletou a peixeira ativa os inimigos
+                if isinstance(coletavel, Peixeira) and coletavel.coletado:
+                    self.peixeira_coletada = True
+                    
+                elif isinstance(coletavel, Revolver) and coletavel.coletado:
+                    self.revolver_coletado = True
+                    
+                elif isinstance(coletavel, Espingarda) and coletavel.coletado:
+                    self.espingarda_coletada = True
+                    
+                elif isinstance(coletavel, Pitu) and coletavel.coletado:
+                    self.player.vida_jogador += (self.player.vida_jogador) * 0.5
+                    self.player.vida_jogador = min(self.player.vida_jogador, 10) # limita a vida do jogador a 10
+                    self.pitu_coletada = True
+                
+                coletavel.kill()  # remove o coletável do grupo após a coleta para deixar o jogo mais limpo
 
-        # vendo se já pode criar revolver ou espingarda
-        if self.fase_completa1 and not self.revolver_criado:
-            self.grupo_coletaveis.add(Revolver(512, 318))
-            self.revolver_criado = True
-
-        if self.fase_completa2 and not self.espingarda_criada:
-            self.grupo_coletaveis.add(Espingarda(512, 318))
-            self.espingarda_criada = True
-
-    def _checar_progressao_fases(self):
+    def checar_progressao_fases(self):
         # verificando se a fase foi completada
         if not self.fase_completa1 and self.kills >= 10:
             self.fase_completa1 = True
@@ -253,6 +346,7 @@ class Jogo:
         elif self.fase_completa1 and not self.fase_completa2 and self.kills >= 10:
             self.fase_completa2 = True
             self.inicio_fase_3 = True  # sinaliza para criar o boss na próxima fase
+            self.pitu_coletada = False
             self.grupo_inimigos.empty()
             self.kills = 0
         elif self.fase_completa2 and not self.fase_completa3 and self.kills >= 1:  # basta matar o boss
@@ -260,8 +354,12 @@ class Jogo:
             self.grupo_inimigos.empty()
             self.kills = 0
 
-    def _spawnar_inimigos(self):
+    def spawnar_inimigos(self):
         # spawnar os bixo (só para fase 1 e 2, fase 3 usa criar_boss)
+        self.criar_revolver()
+        self.criar_espingarda()
+        self.criar_pitu()
+        
         if len(self.grupo_inimigos) >= 5:
             return
 
@@ -285,48 +383,6 @@ class Jogo:
 
         self.grupo_inimigos.add(tipo_inimigo(x, y))
 
-    def criar_boss(self):
-        # spawna o boss em uma borda aleatória
-        borda = random.choice(["topo", "baixo", "esquerda", "direita"])
-        if borda == "esquerda":
-            x, y = -20, random.randint(0, 580)
-        elif borda == "direita":
-            x, y = 820, random.randint(0, 580)
-        elif borda == "topo":
-            x, y = random.randint(0, 780), -20
-        else:
-            x, y = random.randint(0, 780), 620
-        self.grupo_inimigos.add(Boss(x, y))
-
-    def barrinha_vida_player(self):
-        largura = 300
-        altura = 20
-
-        preenchimento = (self.player.vida_jogador / 1000) * largura
-        preenchimento = min(preenchimento, largura)
-
-        pygame.draw.rect(self.tela, (100, 0, 0), (10, 10, largura, altura))          # fundo vermelho escuro
-        pygame.draw.rect(self.tela, (0, 255, 0), (10, 10, preenchimento, altura))    # vida atual verde
-        pygame.draw.rect(self.tela, (255, 255, 255), (10, 10, largura, altura), 2)   # borda branca
-
-    def barrinha_vida_boss(self):
-        for inimigo in self.grupo_inimigos:
-            if isinstance(inimigo, Boss):
-                boss = inimigo
-
-                largura = 150
-                altura = 15
-                x = boss.rect.centerx - (largura // 2)
-                y = boss.rect.y - 30
-
-                preenchimento = (boss.vida / 30) * largura
-                preenchimento = min(preenchimento, largura)
-
-                pygame.draw.rect(self.tela, (100, 0, 0), (x, y, largura, altura))         # fundo vermelho escuro
-                pygame.draw.rect(self.tela, (255, 0, 0), (x, y, preenchimento, altura))   # vida atual vermelha
-                pygame.draw.rect(self.tela, (255, 255, 255), (x, y, largura, altura), 2)  # borda branca
-
-
     def desenhar(self):
         # fundo do jogo
         if self.player.vida_jogador <= 3:
@@ -346,7 +402,7 @@ class Jogo:
         # desenhar os coletaveis
         for coletavel in self.grupo_coletaveis:
             coletavel.desenhar(self.tela)
-
+        
         # mostrar a hud
         self._desenhar_hud()
         self._desenhar_mensagens()
@@ -375,7 +431,7 @@ class Jogo:
         # barrinha de vida do player
         self.barrinha_vida_player()
 
-        # kills (só mostra nas fases 1 e 2, o boss não precisa de contador)
+        # kills (só mostra nas fases 1 e 2)
         if not self.fase_completa2:
             self._desenhar_texto_com_sombra(self.fonte, f"Kills: {self.kills}/10", self.COR_TEXTO, (10, 48))
 
