@@ -90,6 +90,10 @@ class Jogo:
 
                 # troca de arma se tiver arma
                 self.inventario.trocar_arma()
+                if self.inventario.arma_ativa is None :
+                    self.player.atualizar_arma("desarmado")
+                else :
+                    self.player.atualizar_arma(self.inventario.arma_ativa)
 
                 if evento.key == pygame.K_SPACE:
                     self.atirar()
