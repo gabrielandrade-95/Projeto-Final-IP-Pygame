@@ -121,10 +121,54 @@ class Jogador:
                 )]
             },
             "Revolver" : {
-                "direita" : [],
-                "esquerda" : [],
-                "cima" : [],
-                "baixo" : []
+                "direita" : [pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/revolverdireita1.png").convert_alpha(),
+                    tamanho
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/revolverdireita2.png").convert_alpha(),
+                    tamanho
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/revolverdireita3.png").convert_alpha(),
+                    tamanho
+                )],
+                "esquerda" : [pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/revolveresquerda1.png").convert_alpha(),
+                    tamanho
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/revolveresquerda2.png").convert_alpha(),
+                    tamanho
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/revolveresquerda3.png").convert_alpha(),
+                    tamanho
+                )],
+                "cima" : [pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/revolvercima1.png").convert_alpha(),
+                    tamanho
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/revolvercima2.png").convert_alpha(),
+                    tamanho
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/revolvercima3.png").convert_alpha(),
+                    tamanho
+                )],
+                "baixo" : [pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/revolverbaixo1.png").convert_alpha(),
+                    tamanho
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/revolverbaixo2.png").convert_alpha(),
+                    tamanho
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/revolverbaixo3.png").convert_alpha(),
+                    tamanho
+                )]
             },
             "Espingarda" : {
                 "direita" : [],
