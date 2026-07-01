@@ -13,13 +13,13 @@ from sistemas.coletaveis import Peixeira, Revolver, Espingarda, Inventario
 class Jogo:
     def __init__(self):
         pygame.init()
-        self.tela = pygame.display.set_mode((800, 600))
+        self.tela = pygame.display.set_mode((1024, 637))
         pygame.display.set_caption("O Cangaço")
         self.rodando = True
         self.relogio = pygame.time.Clock()
 
         # cria o player
-        self.player = Jogador(400, 300)
+        self.player = Jogador(512, 430)
 
         # sprite
         self.grupo_projeteis = pygame.sprite.Group()
@@ -47,7 +47,7 @@ class Jogo:
         self.tempo_golpe = 0
 
         # cria a peixeira no chão
-        self.grupo_coletaveis.add(Peixeira(400, 250))
+        self.grupo_coletaveis.add(Peixeira(512, 318))
 
         caminho_fonte = "assets/Smokum.ttf"
         try:
@@ -73,8 +73,6 @@ class Jogo:
             self.atualizar()
             self.desenhar()
             self.relogio.tick(60)
-        pygame.quit()
-        sys.exit()
 
     # ------------------------------------------------------------------ #
     #  EVENTOS                                                             #
@@ -242,11 +240,11 @@ class Jogo:
 
         # vendo se já pode criar revolver ou espingarda
         if self.fase_completa1 and not self.revolver_criado:
-            self.grupo_coletaveis.add(Revolver(400, 250))
+            self.grupo_coletaveis.add(Revolver(512, 318))
             self.revolver_criado = True
 
         if self.fase_completa2 and not self.espingarda_criada:
-            self.grupo_coletaveis.add(Espingarda(400, 250))
+            self.grupo_coletaveis.add(Espingarda(512, 318))
             self.espingarda_criada = True
 
     def _checar_progressao_fases(self):
@@ -361,7 +359,7 @@ class Jogo:
 
         # efeito visual do arco da peixeira (dura 150ms)
         if self.golpe_peixeira and pygame.time.get_ticks() - self.tempo_golpe < 150:
-            surf_arco = pygame.Surface((800, 600), pygame.SRCALPHA)
+            surf_arco = pygame.Surface((1024, 637), pygame.SRCALPHA)
             pygame.draw.polygon(surf_arco, (255, 255, 255, 80), self.golpe_peixeira)
             self.tela.blit(surf_arco, (0, 0))
 
@@ -390,27 +388,33 @@ class Jogo:
     def _desenhar_mensagens(self):
         # msg antes de pegar a peixeira
         if not self.peixeira_coletada:
-            self._desenhar_texto_com_sombra(self.fonte, "Colete a Peixeira para começar!", (255, 255, 0), (150, 150))
+            surf = self.fonte.render("Colete a Peixeira para começar!", True, (255, 255, 0))
+            x = (1024 - surf.get_width()) // 2
+            self._desenhar_texto_com_sombra(self.fonte, "Colete a Peixeira para começar!", (255, 255, 0), (x, 150))
 
         elif self.fase_completa1 and not self.revolver_coletado:
             mensagem = "Você venceu a primeira fase! Colete a arma!"
             surf = self.fonte_pequena.render(mensagem, True, (0, 255, 0))
             # width descobre quantos pixels de largura tem o texto, pra centralizar
-            posicao_x = (800 - surf.get_width()) // 2  # 800 é a largura da tela
+            posicao_x = (1024 - surf.get_width()) // 2
             posicao_y = 150
             self._desenhar_texto_com_sombra(self.fonte_pequena, mensagem, (0, 255, 0), (posicao_x, posicao_y))
 
         elif self.fase_completa2 and not self.espingarda_coletada:
             mensagem = "Você venceu a segunda fase! Colete a arma! Agora você vai enfrentar o inimigo final!"
             surf = self.fonte_pequena.render(mensagem, True, (0, 255, 0))
-            posicao_x = (800 - surf.get_width()) // 2
+            posicao_x = (1024 - surf.get_width()) // 2
             posicao_y = 150
             self._desenhar_texto_com_sombra(self.fonte_pequena, mensagem, (0, 255, 0), (posicao_x, posicao_y))
 
         elif self.fase_completa3:
-            self._desenhar_texto_com_sombra(self.fonte_grande, "Você venceu!", (255, 215, 0), (200, 250))
+            surf_v = self.fonte_grande.render("Você venceu!", True, (255, 215, 0))
+            x_v = (1024 - surf_v.get_width()) // 2
+            self._desenhar_texto_com_sombra(self.fonte_grande, "Você venceu!", (255, 215, 0), (x_v, 250))
 
         # derrota
         if self.player.vida_jogador <= 0:
             # bagulho de sombra do game over
-            self._desenhar_texto_com_sombra(self.fonte_grande, "Game Over", (255, 0, 0), (200, 250))
+            surf_g = self.fonte_grande.render("Game Over", True, (255, 0, 0))
+            x_g = (1024 - surf_g.get_width()) // 2
+            self._desenhar_texto_com_sombra(self.fonte_grande, "Game Over", (255, 0, 0), (x_g, 250))

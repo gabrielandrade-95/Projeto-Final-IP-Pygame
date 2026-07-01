@@ -11,12 +11,8 @@ class ColetavelBase(pygame.sprite.Sprite, ABC):
         self.nome = nome
         self.coletado = False
 
-        try:
-            imagem_original = pygame.image.load(caminho_imagem).convert_alpha()
-            self.imagem = pygame.transform.scale(imagem_original, (40, 40))
-        except pygame.error:
-            self.imagem = pygame.Surface((30, 30))
-            self.imagem.fill((255, 0, 0))
+        imagem_original = pygame.image.load(caminho_imagem).convert_alpha()
+        self.imagem = pygame.transform.scale(imagem_original, (40, 40))
 
         self.largura = self.imagem.get_width()
         self.altura = self.imagem.get_height()
@@ -40,17 +36,17 @@ class ColetavelBase(pygame.sprite.Sprite, ABC):
 
 class Peixeira(ColetavelBase):
     def __init__(self, x, y):
-        super().__init__(x, y, "Peixeira", "assets/peixeira.png")
+        super().__init__(x, y, "Peixeira", "assets/sprites_objetos/peixeira.png")
 
 
 class Revolver(ColetavelBase):
     def __init__(self, x, y):
-        super().__init__(x, y, "Revolver", "assets/revolver.png")
+        super().__init__(x, y, "Revolver", "assets/sprites_objetos/revolver.png")
 
 
 class Espingarda(ColetavelBase):
     def __init__(self, x, y):
-        super().__init__(x, y, "Espingarda", "assets/espingarda.png")
+        super().__init__(x, y, "Espingarda", "assets/sprites_objetos/espingarda.png")
 
 
 class Inventario:
@@ -60,21 +56,13 @@ class Inventario:
         self.armas_liberadas = {arma: False for arma in self.ARMAS}
         self.arma_ativa = None
 
-        try:
-            hud = pygame.image.load("assets/hud_inventario.png").convert_alpha()
-            self.imagem_hud_fundo = pygame.transform.scale(hud, (300, 150))
-        except pygame.error:
-            self.imagem_hud_fundo = pygame.Surface((300, 150))
+        hud = pygame.image.load("assets/huds/hud_inventario.png").convert_alpha()
+        self.imagem_hud_fundo = pygame.transform.scale(hud, (300, 150))
 
         self.imagem_hud = {}
         for nome in self.ARMAS:
-            try:
-                img = pygame.image.load(f"assets/{nome.lower()}.png").convert_alpha()
-                self.imagem_hud[nome] = pygame.transform.scale(img, (45, 45))
-            except pygame.error:
-                surf = pygame.Surface((40, 40))
-                surf.fill((100, 100, 100))
-                self.imagem_hud[nome] = surf
+            img = pygame.image.load(f"assets/sprites_objetos/{nome.lower()}.png").convert_alpha()
+            self.imagem_hud[nome] = pygame.transform.scale(img, (45, 45))
 
     def adicionar_arma(self, nome_arma):
         if nome_arma in self.armas_liberadas:
@@ -96,19 +84,22 @@ class Inventario:
                 break
 
     def desenhar_hud(self, tela):
-        x_hud, y_hud = 250, 450
-        tela.blit(self.imagem_hud_fundo, (x_hud, y_hud))
+        x_hud, y_hud = 10, 517  # canto inferior esquerdo
 
-        x_inicial = x_hud + 50
-        y_arma = y_hud + 65
-        largura_bloco = 72
+        hud_reduzido = pygame.transform.scale(self.imagem_hud_fundo, (220, 110))
+        tela.blit(hud_reduzido, (x_hud, y_hud))
+
+        x_inicial = x_hud + 37
+        y_arma = y_hud + 48
+        largura_bloco = 53
 
         for i, nome in enumerate(self.ARMAS):
             x_arma = x_inicial + i * largura_bloco
 
             if self.armas_liberadas[nome]:
-                tela.blit(self.imagem_hud[nome], (x_arma, y_arma))
+                arma_reduzida = pygame.transform.scale(self.imagem_hud[nome], (33, 33))
+                tela.blit(arma_reduzida, (x_arma, y_arma))
 
             if self.arma_ativa == nome:
-                borda = pygame.Rect(x_arma - 1, y_arma - 1, 42, 42)
+                borda = pygame.Rect(x_arma - 1, y_arma - 1, 33, 33)
                 pygame.draw.rect(tela, (255, 255, 255), borda, 2)

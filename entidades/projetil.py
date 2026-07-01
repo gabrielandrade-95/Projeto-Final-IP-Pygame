@@ -41,5 +41,5 @@ class Projetil(pygame.sprite.Sprite):
         self.rect.y += self.vel_y
 
         # remove o projétil ao sair da tela
-        if self.rect.x < 0 or self.rect.x > 800 or self.rect.y < 0 or self.rect.y > 600:
+        if self.rect.x < 0 or self.rect.x > 1024 or self.rect.y < 0 or self.rect.y > 637:
             self.kill()

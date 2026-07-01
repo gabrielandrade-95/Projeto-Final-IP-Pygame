@@ -30,7 +30,7 @@ class Jogador:
                 self.direcao_da_frente = "esquerda"  # Atualiza a direção da frente para esquerda
 
         if teclas[pygame.K_RIGHT] or teclas[pygame.K_d]:
-            if self.x < 770:
+            if self.x < 994:
                 self.x += self.velocidade
                 self.direcao_da_frente = "direita"
 
@@ -40,7 +40,7 @@ class Jogador:
                 self.direcao_da_frente = "cima"
 
         if teclas[pygame.K_DOWN] or teclas[pygame.K_s]:
-            if self.y < 570:
+            if self.y < 607:
                 self.y += self.velocidade
                 self.direcao_da_frente = "baixo"
 
