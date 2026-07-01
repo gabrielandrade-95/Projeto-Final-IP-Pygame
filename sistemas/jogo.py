@@ -10,12 +10,11 @@ from sistemas.coletaveis import Peixeira, Revolver, Espingarda, Inventario
 
 
 class Jogo:
-    def __init__(self):
-        pygame.init()
-        self.tela = pygame.display.set_mode((800, 600))
+    def __init__(self, tela):
+        self.tela = tela
         pygame.display.set_caption("O Cangaço")
-        self.rodando = True
-        self.relogio = pygame.time.Clock()
+        # REMOVER: self.rodando = True
+        # REMOVER: self.relogio = pygame.time.Clock()
 
         # cria o player
         self.player = Jogador(400, 300)
@@ -62,36 +61,25 @@ class Jogo:
         self.COR_TEXTO = (255, 255, 255)  # branco
         self.COR_SOMBRA = (0, 0, 0)       # preto para sombra
 
-    # ------------------------------------------------------------------ #
-    #  LOOP PRINCIPAL                                                      #
-    # ------------------------------------------------------------------ #
 
-    def rodar(self):
-        while self.rodando:
-            self.checar_eventos()
-            self.atualizar()
-            self.desenhar()
-            self.relogio.tick(60)
-        pygame.quit()
-        sys.exit()
 
     # ------------------------------------------------------------------ #
     #  EVENTOS                                                             #
     # ------------------------------------------------------------------ #
 
-    def checar_eventos(self):
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                self.rodando = False
+    def checar_eventos(self, eventos):
+        pause_solicitado = False
+        for evento in eventos:
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_ESCAPE:
-                    self.rodando = False
+                    pause_solicitado = True
 
-                # troca de arma se tiver arma
                 self.inventario.trocar_arma()
 
                 if evento.key == pygame.K_SPACE:
                     self._atirar()
+
+        return pause_solicitado
 
     def _atirar(self):
         tempo_atual = pygame.time.get_ticks()
@@ -192,12 +180,11 @@ class Jogo:
     # ------------------------------------------------------------------ #
 
     def atualizar(self):
-        # se morrer para tudo
+        # se morrer, congela a lógica (o game over quem decide sair)
         if self.player.vida_jogador <= 0:
-            self.rodando = False
             return
 
-        # movimento
+        # resto do método continua IGUAL
         self.player.mover(self.grupo_inimigos)
         self.grupo_projeteis.update()
 
@@ -412,3 +399,15 @@ class Jogo:
         if self.player.vida_jogador <= 0:
             # bagulho de sombra do game over
             self._desenhar_texto_com_sombra(self.fonte_grande, "Game Over", (255, 0, 0), (200, 250))
+
+    def atualizar_frame(self, eventos):
+        if self.checar_eventos(eventos):
+            return "pause"
+
+        self.atualizar()
+        self.desenhar()
+
+        if self.player.vida_jogador <= 0:
+            return "gameOver"
+
+        return "jogo"

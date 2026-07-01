@@ -55,6 +55,6 @@ class Pause():
         return "pause"
     
     def entrar(self):
-        self.returnBotao.reset()  # ou returnBotao no pause
+        self.returnBotao.reset()
         self.menuBotao.reset()
         self.exitBotao.reset()
