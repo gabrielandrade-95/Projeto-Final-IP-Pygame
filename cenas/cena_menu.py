@@ -48,7 +48,7 @@ class CenaMenu:
             if self.rect_play.collidepoint(evento.pos):
                 self.gerenciador.iniciar_jogo()
             elif self.rect_creditos.collidepoint(evento.pos):
-                pass  # créditos ainda não implementados
+                self.gerenciador.ir_para_creditos() # para ir aos créditos
             elif self.rect_exit.collidepoint(evento.pos):
                 pygame.quit()
                 sys.exit()
