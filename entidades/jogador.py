@@ -233,8 +233,7 @@ class Jogador:
         return False
 
     def desenhar(self, tela):
-        retangulo = pygame.Rect(self.x, self.y, self.largura, self.altura)
-        pygame.draw.rect(tela, self.cor, retangulo)
+        tela.blit(self.image, (self.x, self.y))
 
     def atualizar_arma(self, arma) :
         self.arma_equipada = arma
