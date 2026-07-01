@@ -67,6 +67,10 @@ class Jogo:
         # cor dos textos
         self.COR_TEXTO = (255, 255, 255)  # branco
         self.COR_SOMBRA = (0, 0, 0)       # preto para sombra
+        
+        self.imagem_fundo = pygame.image.load("assets/telas/fundo.png").convert()
+        #dimensiona a imagem para o tamanho da tela
+        self.imagem_fundo = pygame.transform.scale(self.imagem_fundo, (1024, 637))
 
     def rodar(self):
         while self.rodando:
@@ -384,11 +388,16 @@ class Jogo:
         self.grupo_inimigos.add(tipo_inimigo(x, y))
 
     def desenhar(self):
+        
         # fundo do jogo
+        self.tela.blit(self.imagem_fundo, (0, 0))
+        
+        #filtro vermelho se a vida dele tiver baixa
         if self.player.vida_jogador <= 3:
-            self.tela.fill((100, 30, 27))  # vermelho quando ta baixa
-        else:
-            self.tela.fill((242, 133, 0))  # laranja com a vida cheia
+            #cria uma superfície transparente
+            surf_filtro = pygame.Surface((1024, 637), pygame.SRCALPHA)
+            surf_filtro.fill((255, 0, 0, 40))
+            self.tela.blit(surf_filtro, (0, 0)) 
 
         # desenhar o jogador
         self.player.desenhar(self.tela)
@@ -405,7 +414,7 @@ class Jogo:
         
         # mostrar a hud
         self._desenhar_hud()
-        self._desenhar_mensagens()
+        self.desenhar_mensagens()
 
         # efeito visual do arco da peixeira (dura 150ms)
         if self.golpe_peixeira and pygame.time.get_ticks() - self.tempo_golpe < 150:
@@ -435,7 +444,7 @@ class Jogo:
         if not self.fase_completa2:
             self._desenhar_texto_com_sombra(self.fonte, f"Kills: {self.kills}/10", self.COR_TEXTO, (10, 48))
 
-    def _desenhar_mensagens(self):
+    def desenhar_mensagens(self):        
         # msg antes de pegar a peixeira
         if not self.peixeira_coletada:
             surf = self.fonte.render("Colete a Peixeira para começar!", True, (255, 255, 0))
@@ -444,18 +453,36 @@ class Jogo:
 
         elif self.fase_completa1 and not self.revolver_coletado:
             mensagem = "Você venceu a primeira fase! Colete a arma!"
+            mensagem2 = "Clique '2' para usar a pistola e '1' para usar a faca."
             surf = self.fonte_pequena.render(mensagem, True, (0, 255, 0))
             # width descobre quantos pixels de largura tem o texto, pra centralizar
             posicao_x = (1024 - surf.get_width()) // 2
             posicao_y = 150
             self._desenhar_texto_com_sombra(self.fonte_pequena, mensagem, (0, 255, 0), (posicao_x, posicao_y))
+            
+            #segunda mensagem
+            surf2 = self.fonte_pequena.render(mensagem2, True, (0, 255, 0))
+            posicao_x2 = (1024 - surf2.get_width()) // 2
+            posicao_y2 = posicao_y + 40 
+            
+            # Desenha a mensagem 2 na tela
+            self._desenhar_texto_com_sombra(self.fonte_pequena, mensagem2, (0, 255, 0), (posicao_x2, posicao_y2))
 
         elif self.fase_completa2 and not self.espingarda_coletada:
             mensagem = "Você venceu a segunda fase! Colete a arma! Agora você vai enfrentar o inimigo final!"
+            mensagem2 = "Clique '3' para usar a espingarda."
             surf = self.fonte_pequena.render(mensagem, True, (0, 255, 0))
             posicao_x = (1024 - surf.get_width()) // 2
             posicao_y = 150
             self._desenhar_texto_com_sombra(self.fonte_pequena, mensagem, (0, 255, 0), (posicao_x, posicao_y))
+            
+            #segunda mensagem
+            surf2 = self.fonte_pequena.render(mensagem2, True, (0, 255, 0))
+            posicao_x2 = (1024 - surf2.get_width()) // 2
+            posicao_y2 = posicao_y + 40 
+            
+            # Desenha a mensagem 2 na tela
+            self._desenhar_texto_com_sombra(self.fonte_pequena, mensagem2, (0, 255, 0), (posicao_x2, posicao_y2))
 
         elif self.fase_completa3:
             surf_v = self.fonte_grande.render("Você venceu!", True, (255, 215, 0))

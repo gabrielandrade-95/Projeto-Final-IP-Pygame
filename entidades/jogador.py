@@ -44,6 +44,7 @@ class Jogador:
                 self.y += self.velocidade
                 self.direcao_da_frente = "baixo"
 
+        # Força de empurrão dos inimigos
         if grupo_inimigos:
             for inimigo in grupo_inimigos:
                 if self.rect.colliderect(inimigo.rect):
@@ -57,9 +58,25 @@ class Jogador:
         self.x += vel_x
         self.y += vel_y
 
-        # atualiza o rect do jogador após o movimento
-        self.rect.x = self.x
-        self.rect.y = self.y
+        # Atualiza o rect do jogador após receber a movimentação e empurrões
+        self.rect.x = int(self.x)
+        self.rect.y = int(self.y)
+        
+        # Limita a posição no eixo X
+        if self.rect.left < 0:
+            self.rect.left = 0
+            self.x = self.rect.x  # sincroniza variável interna com a borda esquerda
+        elif self.rect.right > 1024:
+            self.rect.right = 1024
+            self.x = self.rect.x  # sincroniza variável interna com a borda direita
+        
+        # Limita a posição no eixo Y
+        if self.rect.top < 0:
+            self.rect.top = 0
+            self.y = self.rect.y  # sincroniza variável interna com o topo
+        elif self.rect.bottom > 637:
+            self.rect.bottom = 637
+            self.y = self.rect.y  # sincroniza variável interna com a base
 
     def dano_jogador(self, grupo_inimigos):
         tempo_atual = pygame.time.get_ticks()
@@ -69,10 +86,10 @@ class Jogador:
         for inimigo in grupo_inimigos:
             if isinstance(inimigo, Boss):
                 posicao_boss = inimigo.rect.centerx
-                if abs(posicao_jogador - posicao_boss) <= 25:
+                if abs(posicao_jogador - posicao_boss) <= 10:
                     if tempo_atual - inimigo.ultimo_dano >= inimigo.cooldown_dano:
                         print("Deu dano no jogador")
-                        self.vida_jogador -= 1.8 #dano do boss
+                        self.vida_jogador -= 1.5 #dano do boss
                         inimigo.ultimo_dano = tempo_atual
                         return True
             else:
