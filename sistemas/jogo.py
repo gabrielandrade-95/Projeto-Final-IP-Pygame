@@ -45,6 +45,8 @@ class Jogo:
         # controle do arco da peixeira
         self.golpe_peixeira = None
         self.tempo_golpe = 0
+        self.pausado = False
+        self.game_over = False
 
         # cria a peixeira no chão
         self.grupo_coletaveis.add(Peixeira(512, 318))
@@ -74,9 +76,6 @@ class Jogo:
             self.desenhar()
             self.relogio.tick(60)
 
-    # ------------------------------------------------------------------ #
-    #  EVENTOS                                                             #
-    # ------------------------------------------------------------------ #
 
     def checar_eventos(self):
         for evento in pygame.event.get():
@@ -84,6 +83,7 @@ class Jogo:
                 self.rodando = False
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_ESCAPE:
+                    self.pausado = True
                     self.rodando = False
 
                 # troca de arma se tiver arma
@@ -187,13 +187,10 @@ class Jogo:
         self.golpe_peixeira = pontos
         self.tempo_golpe = pygame.time.get_ticks()
 
-    # ------------------------------------------------------------------ #
-    #  ATUALIZAÇÃO                                                         #
-    # ------------------------------------------------------------------ #
-
     def atualizar(self):
         # se morrer para tudo
         if self.player.vida_jogador <= 0:
+            self.game_over = True
             self.rodando = False
             return
 
@@ -329,9 +326,6 @@ class Jogo:
                 pygame.draw.rect(self.tela, (255, 0, 0), (x, y, preenchimento, altura))   # vida atual vermelha
                 pygame.draw.rect(self.tela, (255, 255, 255), (x, y, largura, altura), 2)  # borda branca
 
-    # ------------------------------------------------------------------ #
-    #  DESENHO                                                             #
-    # ------------------------------------------------------------------ #
 
     def desenhar(self):
         # fundo do jogo
