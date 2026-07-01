@@ -1,7 +1,8 @@
+#main.py
 #esse arquivo será onde o jogo irá ser inicializado
 import sys
-from sistemas.jogo import Jogo
+from cenas.gerenciador import Gerenciador
 
 if __name__ == "__main__":
-    meu_jogo = Jogo()
-    meu_jogo.rodar() 
+    gerenciador = Gerenciador()
+    gerenciador.rodar()
