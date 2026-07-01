@@ -407,7 +407,7 @@ class Jogo:
 
         # desenhar os inimigos
         self.grupo_inimigos.draw(self.tela)
-
+        
         # desenhar os coletaveis
         for coletavel in self.grupo_coletaveis:
             coletavel.desenhar(self.tela)
