@@ -1,1 +1,0 @@
-#aqui é onde ele pega a pexeira

@@ -16,6 +16,7 @@ class Inimigo(pygame.sprite.Sprite):
         # Variáveis para controle de dano
         self.ultimo_dano = 0
         self.cooldown_dano = 1000 # O inimigo pode causar dano a cada 1 segundo (1000 milissegundos)
+        self.vida = 2
 
     def update(self, jogador, grupo_inimigos): # Método para atualizar a posição do inimigo (seguir o jogador)
         # O método recebe o player como parâmetro, pois serão utilizadas as coordenadas dele para calcular o movimento do inimigo
@@ -47,9 +48,9 @@ class Inimigo(pygame.sprite.Sprite):
         self.rect.x += vel_x
         self.rect.y += vel_y
 
-    def dano_inimigo(self, projetil):
+    def dano_inimigo(self, projetil): 
         if self.rect.colliderect(projetil.rect): # Se o retângulo do inimigo colidir com o retângulo do projetil
-            self.kill() # Mata o inimigo
+            self.kill() # Mata o inimigo 
             projetil.kill() # Mata o projetil
             return True
         return False
@@ -75,7 +76,7 @@ class Boss(Inimigo):
         self.rect.x = x
         self.rect.y = y
         self.velocidade = 1.0
-        self.vida = 30
+        self.vida = 25
 
     def dano_inimigo(self, projetil):
         #botei isso pq se não quando ele tomar um tiro ele morre direto

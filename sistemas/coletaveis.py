@@ -1,5 +1,6 @@
 import pygame
 from abc import ABC, abstractmethod
+from sistemas.colisao import checar_colisao_retangulos
 
 
 class ColetavelBase(pygame.sprite.Sprite, ABC):
@@ -11,9 +12,10 @@ class ColetavelBase(pygame.sprite.Sprite, ABC):
         self.coletado = False
 
         try:
-            imagem_original = pygame.image.load(caminho_imagem).convert_alpha()
-            self.imagem = pygame.transform.scale(imagem_original, (40, 40))
-        except pygame.error:
+            self.imagem_original = pygame.image.load(caminho_imagem).convert_alpha()
+            self.imagem = pygame.transform.scale(self.imagem_original, (40, 40))
+
+        except (pygame.error, FileNotFoundError):
             self.imagem = pygame.Surface((30, 30))
             self.imagem.fill((255, 0, 0))
 
@@ -51,6 +53,9 @@ class Espingarda(ColetavelBase):
     def __init__(self, x, y):
         super().__init__(x, y, "Espingarda", "assets/espingarda.png")
 
+class Pitu (ColetavelBase):
+    def __init__(self, x, y):
+        super().__init__(x, y, "Pitu", "assets/Pitu.png")
 
 class Inventario:
     ARMAS = ["Peixeira", "Revolver", "Espingarda"]

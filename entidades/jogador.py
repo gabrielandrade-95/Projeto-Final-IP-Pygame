@@ -13,7 +13,7 @@ class Jogador:
         self.direcao_da_frente = "direita"  # Inicialmente, o jogador está olhando para a direita
         self.cooldown_tiro = 300  # Tempo em milissegundos (300 = meio segundo)
         self.ultimo_tiro = 0      # Relógio zera quando o jogo começa
-        self.vida_jogador = 1000
+        self.vida_jogador = 10
 
         # Criar o rect para colisões
         self.rect = pygame.Rect(self.x, self.y, self.largura, self.altura)
@@ -64,24 +64,21 @@ class Jogador:
         tempo_atual = pygame.time.get_ticks()
 
         posicao_jogador = self.rect.centerx  # pega a posição X do jogador
+    
         for inimigo in grupo_inimigos:
             if isinstance(inimigo, Boss):
-                posicao_boss = inimigo.rect.centerx  # pega a posição X do boss
-                break
-        else:
-            posicao_boss = None  #se não tiver boss, a posicao é none
-
-        for inimigo in grupo_inimigos:
-            if isinstance(inimigo, Boss):
-                if posicao_boss is not None and abs(posicao_jogador - posicao_boss) <= 50:
+                posicao_boss = inimigo.rect.centerx
+                if abs(posicao_jogador - posicao_boss) <= 25:
                     if tempo_atual - inimigo.ultimo_dano >= inimigo.cooldown_dano:
-                        self.vida_jogador -= 2
+                        print("Deu dano no jogador")
+                        self.vida_jogador -= 1.8 #dano do boss
                         inimigo.ultimo_dano = tempo_atual
                         return True
             else:
                 if self.rect.colliderect(inimigo.rect):
                     if tempo_atual - inimigo.ultimo_dano >= inimigo.cooldown_dano:
-                        self.vida_jogador -= 0.35
+                        print("Deu dano no jogador")
+                        self.vida_jogador -= 0.35 #dano do inimigo
                         inimigo.ultimo_dano = tempo_atual
                         return True
         return False
