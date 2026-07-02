@@ -50,6 +50,7 @@ class Jogo:
         self.tempo_golpe = 0
         self.pausado = False
         self.game_over = False
+        self.vitoria = False #definir estado de vitória
 
         # cria a peixeira no chão
         self.grupo_coletaveis.add(Peixeira(512, 318))
@@ -380,6 +381,8 @@ class Jogo:
             self.fase_completa3 = True
             self.grupo_inimigos.empty()
             self.kills = 0
+            self.vitoria = True   #definir estado de vitoria
+            self.rodando = False
 
     def spawnar_inimigos(self):
         # spawnar os bixo (só para fase 1 e 2, fase 3 usa criar_boss)
