@@ -15,7 +15,7 @@ class Projetil(pygame.sprite.Sprite):
         else:
             self.image = pygame.Surface((10, 4))
 
-        self.image.fill((255, 255, 0))  # amarelo
+        self.image.fill((255, 196, 77))  # cor do projétil
         self.rect = self.image.get_rect()
         if self.direcao == "esquerda" : # OK, tiro saindo da pistola
             self.rect.x = x - 10

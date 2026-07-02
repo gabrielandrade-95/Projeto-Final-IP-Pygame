@@ -171,10 +171,54 @@ class Jogador:
                 )]
             },
             "Espingarda" : {
-                "direita" : [],
-                "esquerda" : [],
-                "cima" : [],
-                "baixo" : []
+                "direita" : [pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/espingardadireita1.png").convert_alpha(),
+                    tamanho
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/espingardadireita2.png").convert_alpha(),
+                    tamanho
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/espingardadireita3.png").convert_alpha(),
+                    tamanho
+                )],
+                "esquerda" : [pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/espingardaesquerda1.png").convert_alpha(),
+                    tamanho
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/espingardaesquerda2.png").convert_alpha(),
+                    tamanho
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/espingardaesquerda3.png").convert_alpha(),
+                    tamanho
+                )],
+                "cima" : [pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/espingardacima1.png").convert_alpha(),
+                    (48,64)
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/espingardacima2.png").convert_alpha(),
+                    (48,64)
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/espingardacima3.png").convert_alpha(),
+                    (48,64)
+                )],
+                "baixo" : [pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/espingardabaixo1.png").convert_alpha(),
+                    (48,64)
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/espingardabaixo2.png").convert_alpha(),
+                    (48,64)
+                ),
+                pygame.transform.scale(
+                    pygame.image.load("assets/sprites_entidades/espingardabaixo3.png").convert_alpha(),
+                    (48,64)
+                )]
             }
         }
         self.image = self.animacoes[self.arma_equipada]["direita"][0]

@@ -158,27 +158,27 @@ class Jogo:
     def calcular_tiros_espingarda(self, px, py, direcao, v_base, v_diag):
         if direcao == "direita":
             return [
-                Projetil(px, py, direcao, v_base, 0),        # reto
-                Projetil(px, py, direcao, v_base, -v_diag),  # diagonal cima
-                Projetil(px, py, direcao, v_base,  v_diag),  # diagonal baixo
+                Projetil(px + 5, py - 8, direcao, v_base, 0),        # reto
+                Projetil(px + 5, py - 8, direcao, v_base, -v_diag),  # diagonal cima
+                Projetil(px + 5, py - 8, direcao, v_base,  v_diag),  # diagonal baixo
             ]
         elif direcao == "esquerda":
             return [
-                Projetil(px, py, direcao, -v_base, 0),
-                Projetil(px, py, direcao, -v_base, -v_diag),
-                Projetil(px, py, direcao, -v_base,  v_diag),
+                Projetil(px - 6, py - 4, direcao, -v_base, 0),
+                Projetil(px - 6, py - 4, direcao, -v_base, -v_diag),
+                Projetil(px - 6, py - 4, direcao, -v_base,  v_diag),
             ]
         elif direcao == "cima":
             return [
-                Projetil(px, py, direcao, 0,       -v_base),
-                Projetil(px, py, direcao, -v_diag, -v_base),  # diagonal esquerda
-                Projetil(px, py, direcao,  v_diag, -v_base),  # diagonal direita
+                Projetil(px - 10, py - 5, direcao, 0,       -v_base),
+                Projetil(px - 10, py - 5, direcao, -v_diag, -v_base),  # diagonal esquerda
+                Projetil(px - 10, py - 5, direcao,  v_diag, -v_base),  # diagonal direita
             ]
         elif direcao == "baixo":
             return [
-                Projetil(px, py, direcao, 0,       v_base),
-                Projetil(px, py, direcao, -v_diag, v_base),
-                Projetil(px, py, direcao,  v_diag, v_base),
+                Projetil(px - 10, py + 15, direcao, 0,       v_base),
+                Projetil(px - 10, py + 15, direcao, -v_diag, v_base),
+                Projetil(px - 10, py + 15, direcao,  v_diag, v_base),
             ]
         return []
 
