@@ -240,27 +240,27 @@ class Jogo:
         return False
 
     def criar_revolver(self):
-        # Corrigido: adicionado 'and not self.revolver_criado' para evitar travamento por spawn infinito
+      
         if (self.fase_completa1) and (not self.fase_completa2) and (not self.revolver_coletado) and (not self.revolver_criado):
             revolver = Revolver(400, 250)
             self.grupo_coletaveis.add(revolver)
             self.revolver_criado = True
 
     def criar_espingarda(self):
-        # Corrigido: adicionado 'and not self.espingarda_criada' para evitar travamento por spawn infinito
+        
         if (self.fase_completa2) and (not self.fase_completa3) and (not self.espingarda_coletada) and (not self.espingarda_criada):
             espingarda = Espingarda(400, 250)
             self.grupo_coletaveis.add(espingarda)
             self.espingarda_criada = True
 
     def criar_pitu(self):
-        # Corrigido: adicionado 'and not self.pitu_fase1' para evitar spawn infinito da garrafa
+        
         if (self.fase_completa1) and (not self.fase_completa2) and (not self.pitu_coletada) and (not self.pitu_fase1):
             pitu = Pitu(350, 125)
             self.grupo_coletaveis.add(pitu)
             self.pitu_fase1 = True
 
-        # Corrigido: adicionado 'and not self.pitu_fase2' para evitar spawn infinito da garrafa
+     
         if (self.fase_completa2) and (not self.fase_completa3) and (not self.pitu_coletada) and (not self.pitu_fase2):
             pitu = Pitu(350, 125)
             self.grupo_coletaveis.add(pitu)
@@ -273,7 +273,7 @@ class Jogo:
         largura = 300
         altura = 20
 
-        # Corrigido de 1000 para 10 para preencher de forma correta e proporcional à vida real do player
+    
         preenchimento = (self.player.vida_jogador / 10) * largura
         preenchimento = min(preenchimento, largura)
 
@@ -294,7 +294,6 @@ class Jogo:
                 x = boss.rect.centerx - (largura // 2)
                 y = boss.rect.y - 30
 
-                # Verifique se o boss tem o atributo 'vida', ajustado para valor máximo (30)
                 if hasattr(boss, 'vida'):
                     preenchimento = (boss.vida / 45) * largura
                     preenchimento = min(preenchimento, largura)
