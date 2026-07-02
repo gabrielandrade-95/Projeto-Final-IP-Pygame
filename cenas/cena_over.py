@@ -52,7 +52,14 @@ class CenaOver:
     def checar_eventos(self, evento):
         if evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
             if self.rect_reset.collidepoint(evento.pos):
+
+                #TOCAR MUSICA TEMA DAS FASES
+                pygame.mixer.music.stop()
+                pygame.mixer.music.load("assets/sons/musica_tema.mp3")
+                pygame.mixer.music.play(-1)
+
                 self.gerenciador.reiniciar_jogo()
+                
             elif self.rect_menu.collidepoint(evento.pos):
                 self.gerenciador.ir_para_menu()
             elif self.rect_exit.collidepoint(evento.pos):

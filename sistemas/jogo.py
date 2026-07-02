@@ -1,4 +1,4 @@
-#jogo.py
+# jogo.py
 import pygame
 import sys
 import random
@@ -67,10 +67,12 @@ class Jogo:
         # cor dos textos
         self.COR_TEXTO = (255, 255, 255)  # branco
         self.COR_SOMBRA = (0, 0, 0)       # preto para sombra
-        
-        self.imagem_fundo = pygame.image.load("assets/telas/fundo.png").convert()
-        #dimensiona a imagem para o tamanho da tela
-        self.imagem_fundo = pygame.transform.scale(self.imagem_fundo, (1024, 637))
+
+        self.imagem_fundo = pygame.image.load(
+            "assets/telas/fundo.png").convert()
+        # dimensiona a imagem para o tamanho da tela
+        self.imagem_fundo = pygame.transform.scale(
+            self.imagem_fundo, (1024, 637))
 
     def rodar(self):
         while self.rodando:
@@ -106,20 +108,24 @@ class Jogo:
         px = self.player.x + 15
         py = self.player.y + 15
         direcao = self.player.direcao_da_frente
-        
+
         # comportamento da peixeira (corpo a corpo)
         if arma_atual == "Peixeira":
+            self.player.som_faca.play()  # SOM DA PEIXEIRA
             self.atacar_peixeira(direcao)
 
         # comportamento da pistola
         elif arma_atual == "Revolver":
+            self.player.som_pistola.play()  # SOM DO REVOLVER
             self.grupo_projeteis.add(Projetil(px, py, direcao))
 
         # comportamento da espingarda/doze/shotgun
         elif arma_atual == "Espingarda":
+            self.player.som_espingarda.play()  # SOM DA ESPINGARDA
             v_base = 10  # velocidade principal
             v_diag = 3   # desvio da diagonal
-            tiros = self.calcular_tiros_espingarda(px, py, direcao, v_base, v_diag)
+            tiros = self.calcular_tiros_espingarda(
+                px, py, direcao, v_base, v_diag)
             # adiciona os 3 tiros ao grupo
             self.grupo_projeteis.add(*tiros)
 
@@ -142,13 +148,13 @@ class Jogo:
 
             if not self.fase_completa1:
                 novo_inimigo = Inimigo(x, y)
-            
+
             elif self.fase_completa1 and not self.fase_completa2:
                 novo_inimigo = InimigoRapido(x, y)
-            
+
             elif inimigo == "boss":
                 novo_inimigo = Boss(x, y)
-                
+
             grupo_inimigos.add(novo_inimigo)
 
     def calcular_tiros_espingarda(self, px, py, direcao, v_base, v_diag):
@@ -167,8 +173,10 @@ class Jogo:
         elif direcao == "cima":
             return [
                 Projetil(px, py, direcao, 0,       -v_base),
-                Projetil(px, py, direcao, -v_diag, -v_base),  # diagonal esquerda
-                Projetil(px, py, direcao,  v_diag, -v_base),  # diagonal direita
+                Projetil(px, py, direcao, -v_diag, -
+                         v_base),  # diagonal esquerda
+                Projetil(px, py, direcao,  v_diag, -
+                         v_base),  # diagonal direita
             ]
         elif direcao == "baixo":
             return [
@@ -180,17 +188,19 @@ class Jogo:
 
     def atacar_peixeira(self, direcao):
         alcance = 80      # distância do corte em pixels
-        angulo_arco = 120 # graus totais do arco
+        angulo_arco = 120  # graus totais do arco
 
         cx = self.player.x + self.player.largura // 2
         cy = self.player.y + self.player.altura // 2
 
         # ângulo central de cada direção
-        angulo_central = {"direita": 0, "baixo": 90, "esquerda": 180, "cima": 270}.get(direcao, 0)
+        angulo_central = {"direita": 0, "baixo": 90,
+                          "esquerda": 180, "cima": 270}.get(direcao, 0)
         metade = angulo_arco / 2  # 60 graus para cada lado
 
         # ve se a peixeira pegou no inimigo
-        dano_peixeira = 1  # 1 de dano por golpe (inimigo tem 2 de vida = 2 hits)
+        # 1 de dano por golpe (inimigo tem 2 de vida = 2 hits)
+        dano_peixeira = 1
         for inimigo in list(self.grupo_inimigos):
             ex = inimigo.rect.centerx - cx
             ey = inimigo.rect.centery - cy
@@ -210,8 +220,10 @@ class Jogo:
         pontos = [(cx, cy)]
         num_segmentos = 16
         for i in range(num_segmentos + 1):
-            angulo = math.radians(angulo_central - metade + (angulo_arco / num_segmentos) * i)
-            pontos.append((cx + math.cos(angulo) * alcance, cy + math.sin(angulo) * alcance))
+            angulo = math.radians(
+                angulo_central - metade + (angulo_arco / num_segmentos) * i)
+            pontos.append((cx + math.cos(angulo) * alcance,
+                          cy + math.sin(angulo) * alcance))
 
         self.golpe_peixeira = pontos
         self.tempo_golpe = pygame.time.get_ticks()
@@ -221,28 +233,28 @@ class Jogo:
         if self.player.vida_jogador <= 0:
             return True
         return False
-    
+
     def criar_revolver(self):
         # Corrigido: adicionado 'and not self.revolver_criado' para evitar travamento por spawn infinito
         if (self.fase_completa1) and (not self.fase_completa2) and (not self.revolver_coletado) and (not self.revolver_criado):
             revolver = Revolver(400, 250)
             self.grupo_coletaveis.add(revolver)
             self.revolver_criado = True
-        
+
     def criar_espingarda(self):
         # Corrigido: adicionado 'and not self.espingarda_criada' para evitar travamento por spawn infinito
         if (self.fase_completa2) and (not self.fase_completa3) and (not self.espingarda_coletada) and (not self.espingarda_criada):
             espingarda = Espingarda(400, 250)
             self.grupo_coletaveis.add(espingarda)
             self.espingarda_criada = True
-            
+
     def criar_pitu(self):
         # Corrigido: adicionado 'and not self.pitu_fase1' para evitar spawn infinito da garrafa
         if (self.fase_completa1) and (not self.fase_completa2) and (not self.pitu_coletada) and (not self.pitu_fase1):
             pitu = Pitu(350, 125)
             self.grupo_coletaveis.add(pitu)
             self.pitu_fase1 = True
-            
+
         # Corrigido: adicionado 'and not self.pitu_fase2' para evitar spawn infinito da garrafa
         if (self.fase_completa2) and (not self.fase_completa3) and (not self.pitu_coletada) and (not self.pitu_fase2):
             pitu = Pitu(350, 125)
@@ -251,37 +263,45 @@ class Jogo:
 
     def criar_boss(self):
         self.onda_inimigos(self.grupo_inimigos, self.player, inimigo="boss")
-    
+
     def barrinha_vida_player(self):
         largura = 300
         altura = 20
-        
+
         # Corrigido de 1000 para 10 para preencher de forma correta e proporcional à vida real do player
         preenchimento = (self.player.vida_jogador / 10) * largura
         preenchimento = min(preenchimento, largura)
-        
-        pygame.draw.rect(self.tela, (100, 0, 0), (10, 10, largura, altura))          # fundo vermelho escuro
-        pygame.draw.rect(self.tela, (0, 255, 0), (10, 10, preenchimento, altura))    # vida atual verde
-        pygame.draw.rect(self.tela, (255, 255, 255), (10, 10, largura, altura), 2)   # borda branca
-        
+
+        # fundo vermelho escuro
+        pygame.draw.rect(self.tela, (100, 0, 0), (10, 10, largura, altura))
+        pygame.draw.rect(self.tela, (0, 255, 0),
+                         (10, 10, preenchimento, altura))    # vida atual verde
+        pygame.draw.rect(self.tela, (255, 255, 255),
+                         (10, 10, largura, altura), 2)   # borda branca
+
     def barrinha_vida_boss(self):
         for inimigo in self.grupo_inimigos:
             if isinstance(inimigo, Boss):
                 boss = inimigo
-                
+
                 largura = 150
                 altura = 15
                 x = boss.rect.centerx - (largura // 2)
                 y = boss.rect.y - 30
-                
+
                 # Verifique se o boss tem o atributo 'vida', ajustado para valor máximo (30)
                 if hasattr(boss, 'vida'):
                     preenchimento = (boss.vida / 30) * largura
                     preenchimento = min(preenchimento, largura)
-                    
-                    pygame.draw.rect(self.tela, (100, 0, 0), (x, y, largura, altura))         # fundo vermelho escuro
-                    pygame.draw.rect(self.tela, (255, 0, 0), (x, y, preenchimento, altura))   # vida atual vermelha
-                    pygame.draw.rect(self.tela, (255, 255, 255), (x, y, largura, altura), 2)  # borda branca
+
+                    # fundo vermelho escuro
+                    pygame.draw.rect(self.tela, (100, 0, 0),
+                                     (x, y, largura, altura))
+                    # vida atual vermelha
+                    pygame.draw.rect(self.tela, (255, 0, 0),
+                                     (x, y, preenchimento, altura))
+                    pygame.draw.rect(self.tela, (255, 255, 255),
+                                     (x, y, largura, altura), 2)  # borda branca
 
     def atualizar(self):
         # se morrer para tudo
@@ -327,18 +347,21 @@ class Jogo:
                 # se coletou a peixeira ativa os inimigos
                 if isinstance(coletavel, Peixeira) and coletavel.coletado:
                     self.peixeira_coletada = True
-                    
+
                 elif isinstance(coletavel, Revolver) and coletavel.coletado:
                     self.revolver_coletado = True
-                    
+
                 elif isinstance(coletavel, Espingarda) and coletavel.coletado:
                     self.espingarda_coletada = True
-                    
+
                 elif isinstance(coletavel, Pitu) and coletavel.coletado:
-                    self.player.vida_jogador += (self.player.vida_jogador) * 0.5
-                    self.player.vida_jogador = min(self.player.vida_jogador, 10) # limita a vida do jogador a 10
+                    self.player.vida_jogador += (
+                        self.player.vida_jogador) * 0.5
+                    # limita a vida do jogador a 10
+                    self.player.vida_jogador = min(
+                        self.player.vida_jogador, 10)
                     self.pitu_coletada = True
-                
+
                 coletavel.kill()  # remove o coletável do grupo após a coleta para deixar o jogo mais limpo
 
     def checar_progressao_fases(self):
@@ -363,7 +386,7 @@ class Jogo:
         self.criar_revolver()
         self.criar_espingarda()
         self.criar_pitu()
-        
+
         if len(self.grupo_inimigos) >= 5:
             return
 
@@ -388,16 +411,16 @@ class Jogo:
         self.grupo_inimigos.add(tipo_inimigo(x, y))
 
     def desenhar(self):
-        
+
         # fundo do jogo
         self.tela.blit(self.imagem_fundo, (0, 0))
-        
-        #filtro vermelho se a vida dele tiver baixa
+
+        # filtro vermelho se a vida dele tiver baixa
         if self.player.vida_jogador <= 3:
-            #cria uma superfície transparente
+            # cria uma superfície transparente
             surf_filtro = pygame.Surface((1024, 637), pygame.SRCALPHA)
             surf_filtro.fill((255, 0, 0, 40))
-            self.tela.blit(surf_filtro, (0, 0)) 
+            self.tela.blit(surf_filtro, (0, 0))
 
         # desenhar o jogador
         self.player.desenhar(self.tela)
@@ -407,11 +430,11 @@ class Jogo:
 
         # desenhar os inimigos
         self.grupo_inimigos.draw(self.tela)
-        
+
         # desenhar os coletaveis
         for coletavel in self.grupo_coletaveis:
             coletavel.desenhar(self.tela)
-        
+
         # mostrar a hud
         self._desenhar_hud()
         self.desenhar_mensagens()
@@ -419,7 +442,8 @@ class Jogo:
         # efeito visual do arco da peixeira (dura 150ms)
         if self.golpe_peixeira and pygame.time.get_ticks() - self.tempo_golpe < 150:
             surf_arco = pygame.Surface((1024, 637), pygame.SRCALPHA)
-            pygame.draw.polygon(surf_arco, (255, 255, 255, 80), self.golpe_peixeira)
+            pygame.draw.polygon(
+                surf_arco, (255, 255, 255, 80), self.golpe_peixeira)
             self.tela.blit(surf_arco, (0, 0))
 
         # barrinha de vida do boss
@@ -442,14 +466,17 @@ class Jogo:
 
         # kills (só mostra nas fases 1 e 2)
         if not self.fase_completa2:
-            self._desenhar_texto_com_sombra(self.fonte, f"Kills: {self.kills}/10", self.COR_TEXTO, (10, 48))
+            self._desenhar_texto_com_sombra(
+                self.fonte, f"Kills: {self.kills}/10", self.COR_TEXTO, (10, 48))
 
-    def desenhar_mensagens(self):        
+    def desenhar_mensagens(self):
         # msg antes de pegar a peixeira
         if not self.peixeira_coletada:
-            surf = self.fonte.render("Colete a Peixeira para começar!", True, (255, 255, 0))
+            surf = self.fonte.render(
+                "Colete a Peixeira para começar!", True, (255, 255, 0))
             x = (1024 - surf.get_width()) // 2
-            self._desenhar_texto_com_sombra(self.fonte, "Colete a Peixeira para começar!", (255, 255, 0), (x, 150))
+            self._desenhar_texto_com_sombra(
+                self.fonte, "Colete a Peixeira para começar!", (255, 255, 0), (x, 150))
 
         elif self.fase_completa1 and not self.revolver_coletado:
             mensagem = "Você venceu a primeira fase! Colete a arma!"
@@ -458,15 +485,17 @@ class Jogo:
             # width descobre quantos pixels de largura tem o texto, pra centralizar
             posicao_x = (1024 - surf.get_width()) // 2
             posicao_y = 150
-            self._desenhar_texto_com_sombra(self.fonte_pequena, mensagem, (0, 255, 0), (posicao_x, posicao_y))
-            
-            #segunda mensagem
+            self._desenhar_texto_com_sombra(
+                self.fonte_pequena, mensagem, (0, 255, 0), (posicao_x, posicao_y))
+
+            # segunda mensagem
             surf2 = self.fonte_pequena.render(mensagem2, True, (0, 255, 0))
             posicao_x2 = (1024 - surf2.get_width()) // 2
-            posicao_y2 = posicao_y + 40 
-            
+            posicao_y2 = posicao_y + 40
+
             # Desenha a mensagem 2 na tela
-            self._desenhar_texto_com_sombra(self.fonte_pequena, mensagem2, (0, 255, 0), (posicao_x2, posicao_y2))
+            self._desenhar_texto_com_sombra(
+                self.fonte_pequena, mensagem2, (0, 255, 0), (posicao_x2, posicao_y2))
 
         elif self.fase_completa2 and not self.espingarda_coletada:
             mensagem = "Você venceu a segunda fase! Colete a arma! Agora você vai enfrentar o inimigo final!"
@@ -474,24 +503,35 @@ class Jogo:
             surf = self.fonte_pequena.render(mensagem, True, (0, 255, 0))
             posicao_x = (1024 - surf.get_width()) // 2
             posicao_y = 150
-            self._desenhar_texto_com_sombra(self.fonte_pequena, mensagem, (0, 255, 0), (posicao_x, posicao_y))
-            
-            #segunda mensagem
+            self._desenhar_texto_com_sombra(
+                self.fonte_pequena, mensagem, (0, 255, 0), (posicao_x, posicao_y))
+
+            # segunda mensagem
             surf2 = self.fonte_pequena.render(mensagem2, True, (0, 255, 0))
             posicao_x2 = (1024 - surf2.get_width()) // 2
-            posicao_y2 = posicao_y + 40 
-            
+            posicao_y2 = posicao_y + 40
+
             # Desenha a mensagem 2 na tela
-            self._desenhar_texto_com_sombra(self.fonte_pequena, mensagem2, (0, 255, 0), (posicao_x2, posicao_y2))
+            self._desenhar_texto_com_sombra(
+                self.fonte_pequena, mensagem2, (0, 255, 0), (posicao_x2, posicao_y2))
 
         elif self.fase_completa3:
-            surf_v = self.fonte_grande.render("Você venceu!", True, (255, 215, 0))
+            surf_v = self.fonte_grande.render(
+                "Você venceu!", True, (255, 215, 0))
             x_v = (1024 - surf_v.get_width()) // 2
-            self._desenhar_texto_com_sombra(self.fonte_grande, "Você venceu!", (255, 215, 0), (x_v, 250))
+            self._desenhar_texto_com_sombra(
+                self.fonte_grande, "Você venceu!", (255, 215, 0), (x_v, 250))
 
         # derrota
         if self.player.vida_jogador <= 0:
+
+            # TROCAR MUSICA NA TELA DE GAME OVER
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load("assets/sons/musica_principal.mp3")
+            pygame.mixer.music.play(-1)
+
             # bagulho de sombra do game over
             surf_g = self.fonte_grande.render("Game Over", True, (255, 0, 0))
             x_g = (1024 - surf_g.get_width()) // 2
-            self._desenhar_texto_com_sombra(self.fonte_grande, "Game Over", (255, 0, 0), (x_g, 250))
+            self._desenhar_texto_com_sombra(
+                self.fonte_grande, "Game Over", (255, 0, 0), (x_g, 250))

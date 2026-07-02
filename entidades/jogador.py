@@ -19,6 +19,12 @@ class Jogador:
         # Criar o rect para colisões
         self.rect = pygame.Rect(self.x, self.y, self.largura, self.altura)
 
+        #Carregar os Efeitos Sonoros
+        self.som_faca = pygame.mixer.Sound("assets/sons/faca.wav")
+        self.som_pistola = pygame.mixer.Sound("assets/sons/tiro.wav")
+        self.som_espingarda = pygame.mixer.Sound("assets/sons/espingarda.wav")
+        self.som_pitu = pygame.mixer.Sound("assets/sons/pitu.wav")
+
     def mover(self, grupo_inimigos=None):
         teclas = pygame.key.get_pressed()
         vel_x = 0
