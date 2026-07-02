@@ -160,7 +160,7 @@ class Boss(Inimigo):
         super().__init__(x, y)
 
         self.velocidade = 1.0 
-        self.vida = 30 
+        self.vida = 45 
         self.esta_atacando = False
         self.ultimo_ataque_especial = pygame.time.get_ticks()
         self.cooldown_especial = 5000 # 5000 milissegundos = 5 segundos
@@ -243,7 +243,7 @@ class Boss(Inimigo):
         # Define imagem inicial
         if len(self.animations['baixo']) > 0:
             self.image = self.animations['baixo'][0]
-        else:
+        else:   
             self.image = pygame.Surface((80, 80))
             self.image.fill((0, 0, 255))
         
@@ -300,9 +300,28 @@ class Boss(Inimigo):
             # Atualiza a imagem com o frame do ataque atual
             self.image = self.animations[self.direcao][int(self.quadro_atual)]
             
-    def dano_inimigo(self, projetil):
-        # O Boss substitui esse método porque toma 1.5 de dano por bala
-        if self.rect.colliderect(projetil.rect):  
-            projetil.kill()  
-            return self.receber_dano(1.5)  
+    def dano_jogador(self, grupo_inimigos):
+        tempo_atual = pygame.time.get_ticks()
+        
+        for inimigo in grupo_inimigos:
+            # verifica se é Boss pelo nome da classe
+            if inimigo.__class__.__name__ == "Boss":
+                # calcula a distância em 2D (X e Y)
+                distancia_x = self.rect.centerx - inimigo.rect.centerx
+                distancia_y = self.rect.centery - inimigo.rect.centery
+
+                if distancia_x <= 60 or distancia_y <= 60:
+                    if tempo_atual - inimigo.ultimo_dano >= inimigo.cooldown_dano:
+                        self.vida_jogador -= 1.8
+                        inimigo.ultimo_dano = tempo_atual
+                        return True
+            else:
+                # inimigos normais usam colisão
+                if self.rect.colliderect(inimigo.rect):
+                    if tempo_atual - inimigo.ultimo_dano >= inimigo.cooldown_dano:
+                        print(f"Inimigo normal dando dano!")
+                        self.vida_jogador -= 0.35
+                        inimigo.ultimo_dano = tempo_atual
+                        return True
+        
         return False

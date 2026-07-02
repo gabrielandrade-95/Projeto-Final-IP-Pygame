@@ -51,6 +51,8 @@ class Jogo:
         self.pausado = False
         self.game_over = False
         self.vitoria = False #definir estado de vitória
+        
+        self.tempo_vitoria = None
 
         # cria a peixeira no chão
         self.grupo_coletaveis.add(Peixeira(512, 318))
@@ -521,11 +523,17 @@ class Jogo:
                 self.fonte_pequena, mensagem2, (0, 255, 0), (posicao_x2, posicao_y2))
 
         elif self.fase_completa3:
-            surf_v = self.fonte_grande.render(
-                "Você venceu!", True, (255, 215, 0))
+            surf_v = self.fonte_grande.render("Você venceu!", True, (255, 215, 0))
             x_v = (1024 - surf_v.get_width()) // 2
-            self._desenhar_texto_com_sombra(
-                self.fonte_grande, "Você venceu!", (255, 215, 0), (x_v, 250))
+            self._desenhar_texto_com_sombra(self.fonte_grande, "Você venceu!", (255, 215, 0), (x_v, 250))
+            
+            # Marca o tempo da vitória na primeira vez
+            if self.tempo_vitoria is None:
+                self.tempo_vitoria = pygame.time.get_ticks()
+            
+            # Espera 5 segundos antes de fechar
+            if pygame.time.get_ticks() - self.tempo_vitoria >= 5000:
+                self.rodando = False
 
         # derrota
         if self.player.vida_jogador <= 0:
