@@ -17,8 +17,18 @@ class Projetil(pygame.sprite.Sprite):
 
         self.image.fill((255, 255, 0))  # amarelo
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        if self.direcao == "esquerda" : # OK, tiro saindo da pistola
+            self.rect.x = x - 10
+            self.rect.y = y + 12
+        elif self.direcao == "direita" :
+            self.rect.x = x + 32
+            self.rect.y = y + 8
+        elif self.direcao == "cima" :
+            self.rect.x = x + 17
+            self.rect.y = y - 9
+        elif self.direcao == "baixo" :
+            self.rect.x = x + 15
+            self.rect.y = y + 15
 
         # velocidades manuais (espingarda) ou calculadas (pistola/peixeira)
         if vel_x is not None and vel_y is not None:
