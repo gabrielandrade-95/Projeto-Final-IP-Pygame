@@ -323,9 +323,24 @@ class Jogador:
     def desenhar(self, tela):
         tela.blit(self.image, (self.x, self.y))
 
-    def atualizar_arma(self, arma) :
-        self.arma_equipada = arma
-        self.sprite_atual = 0
+    def atualizar_arma(self, arma_ativa):
+        self.arma_equipada = arma_ativa
+        
+        # verifica se a arma existe nas animações
+        if self.arma_equipada not in self.animacoes:
+            print(f"Aviso: Arma '{self.arma_equipada}' não encontrada nas animações")
+            return
+        
+        # verifica se a direção existe
+        if self.direcao_da_frente not in self.animacoes[self.arma_equipada]:
+            print(f"Aviso: Direção '{self.direcao_da_frente}' não encontrada para '{self.arma_equipada}'")
+            return
+        
+        # verifica se tem frames
+        if len(self.animacoes[self.arma_equipada][self.direcao_da_frente]) == 0:
+            print(f"Aviso: Nenhum frame encontrado para '{self.arma_equipada}' na direção '{self.direcao_da_frente}'")
+            return
+        
         self.image = self.animacoes[self.arma_equipada][self.direcao_da_frente][0]
 
     def animar(self):
