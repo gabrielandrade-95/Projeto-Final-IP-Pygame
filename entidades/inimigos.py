@@ -130,7 +130,7 @@ class Inimigo(pygame.sprite.Sprite):
     def dano_inimigo(self, projetil):
         if self.rect.colliderect(projetil.rect): 
             projetil.kill() 
-            return self.receber_dano(1) 
+            return self.receber_dano(2)
         return False
 
 
