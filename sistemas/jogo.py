@@ -296,7 +296,7 @@ class Jogo:
 
                 # Verifique se o boss tem o atributo 'vida', ajustado para valor máximo (30)
                 if hasattr(boss, 'vida'):
-                    preenchimento = (boss.vida / 30) * largura
+                    preenchimento = (boss.vida / 45) * largura
                     preenchimento = min(preenchimento, largura)
 
                     # fundo vermelho escuro
