@@ -1,5 +1,3 @@
-# O-Cangaço-Projeto-Final-IP-Pygame
-
 # O Cangaço: A Saga de Lampião
 
 Uma aventura em 2D de ação e sobrevivência inspirada no cangaço nordestino, desenvolvida como projeto final da disciplina de **Introdução à Programação** do curso de **Ciência da Computação na UFPE** (2026.1).
@@ -60,15 +58,15 @@ python main.py
 ```
 ---
 
-# 🧑🏽‍💻 Desenvolvedores
-<img src="https://github.com/davidgabrielg10-github.png" width="100px;" alt="David Gabriel"/>
-<img src="https://github.com/DavidDuarte13-github.png" width="100px;" alt="David Duarte"/>
-<img src="https://github.com/gabrielandrade-95-github.png" width="100px;" alt="Gabriel Andrade"/>
-<img src="https://github.com/guihisham-dev-github.png" width="100px;" alt="Guilherme Hisham"/>
-<img src="https://github.com/juantarcisio1-github.png" width="100px;" alt="Juan Tarcísio"/>
-<img src="https://github.com/NyckolasJGF-github.png" width="100px;" alt="Nyckolas José"/>
+## 🧑🏽‍💻 Desenvolvedores
 
+| <a href="https://github.com/davidgabrielg10"><img src="https://github.com/davidgabrielg10.png" width="120px;" alt="David Gabriel"/></a> | <a href="https://github.com/DavidDuarte13"><img src="https://github.com/DavidDuarte13.png" width="120px;" alt="David Duarte"/></a> | <a href="https://github.com/gabrielandrade-95"><img src="https://github.com/gabrielandrade-95.png" width="120px;" alt="Gabriel Andrade"/></a> |
+|:---:|:---:|:---:|
+| **David Gabriel** | **David Duarte** | **Gabriel Andrade** |
 
+| <a href="https://github.com/guihisham-dev"><img src="https://github.com/guihisham-dev.png" width="120px;" alt="Guilherme Hisham"/></a> | <a href="https://github.com/juantarciso1"><img src="https://github.com/juantarciso1.png" width="120px;" alt="Juan Tarcísio"/></a> | <a href="https://github.com/NyckolasJGF"><img src="https://github.com/NyckolasJGF.png" width="120px;" alt="Nyckolas José"/></a> |
+|:---:|:---:|:---:|
+| **Guilherme Hisham** | **Juan Tarcísio** | **Nyckolas José** |
 
 
 
