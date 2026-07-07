@@ -8,23 +8,9 @@ O jogador assume o papel de **Lampião**, enfrentando hordas de inimigos ao long
 
 ## Desenvolvedores
 
-<p align="center">
-  <a href="https://github.com/davidgabrielg10"><img src="https://github.com/davidgabrielg10.png" width="110"/></a>
-  <a href="https://github.com/DavidDuarte13"><img src="https://github.com/DavidDuarte13.png" width="110"/></a>
-  <a href="https://github.com/gabrielandrade-95"><img src="https://github.com/gabrielandrade-95.png" width="110"/></a>
-  <a href="https://github.com/guihisham-dev"><img src="https://github.com/guihisham-dev.png" width="110"/></a>
-  <a href="https://github.com/juantarciso1"><img src="https://github.com/juantarciso1.png" width="110"/></a>
-  <a href="https://github.com/NyckolasJGF"><img src="https://github.com/NyckolasJGF.png" width="110"/></a>
-</p>
-
-<p align="center">
-<b>David Gabriel</b> •
-<b>David Duarte</b> •
-<b>Gabriel Andrade</b> •
-<b>Guilherme Hisham</b> •
-<b>Juan Tarcísio</b> •
-<b>Nyckolas José</b>
-</p>
+| <a href="https://github.com/davidgabrielg10"><img src="https://github.com/davidgabrielg10.png" width="120px;" alt="David Gabriel"/></a> | <a href="https://github.com/DavidDuarte13"><img src="https://github.com/DavidDuarte13.png" width="120px;" alt="David Duarte"/></a> | <a href="https://github.com/gabrielandrade-95"><img src="https://github.com/gabrielandrade-95.png" width="120px;" alt="Gabriel Andrade"/></a> | <a href="https://github.com/guihisham-dev"><img src="https://github.com/guihisham-dev.png" width="120px;" alt="Guilherme Hisham"/></a> | <a href="https://github.com/juantarciso1"><img src="https://github.com/juantarciso1.png" width="120px;" alt="Juan Tarcísio"/></a> | <a href="https://github.com/NyckolasJGF"><img src="https://github.com/NyckolasJGF.png" width="120px;" alt="Nyckolas José"/></a> |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| **David Gabriel** | **David Duarte** | **Gabriel Andrade** | **Guilherme Hisham** | **Juan Tarcísio** | **Nyckolas José** |
 
 ---
 
