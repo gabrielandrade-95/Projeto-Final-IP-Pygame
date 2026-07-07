@@ -1,25 +1,73 @@
 # O Cangaço: A Saga de Lampião
 
-Uma aventura em 2D de ação e sobrevivência inspirada no cangaço nordestino, desenvolvida como projeto final da disciplina de **Introdução à Programação** do curso de **Ciência da Computação na UFPE** (2026.1).
+Uma aventura **2D de ação e sobrevivência** inspirada no cangaço nordestino, desenvolvida como projeto final da disciplina de **Introdução à Programação** do curso de **Ciência da Computação da UFPE (2026.1)**.
+
+O jogador assume o papel de **Lampião**, enfrentando hordas de inimigos ao longo de três fases, desbloqueando novas armas e evoluindo seu arsenal até o confronto final contra o chefe do jogo.
 
 ---
 
-##  Sobre o Projeto
+## Desenvolvedores
 
-O jogo acompanha a jornada de Lampião enfrentando hordas de inimigos em três fases. O projeto foi construído do zero utilizando **Python** e **Pygame**, aplicando conceitos sólidos de **Programação Orientada a Objetos (POO)** como herança, polimorfismo, classes abstratas, gerenciamento de estados (cenas) e persistência de dados (inventário dinâmico).
+<p align="center">
+  <a href="https://github.com/davidgabrielg10"><img src="https://github.com/davidgabrielg10.png" width="110"/></a>
+  <a href="https://github.com/DavidDuarte13"><img src="https://github.com/DavidDuarte13.png" width="110"/></a>
+  <a href="https://github.com/gabrielandrade-95"><img src="https://github.com/gabrielandrade-95.png" width="110"/></a>
+  <a href="https://github.com/guihisham-dev"><img src="https://github.com/guihisham-dev.png" width="110"/></a>
+  <a href="https://github.com/juantarciso1"><img src="https://github.com/juantarciso1.png" width="110"/></a>
+  <a href="https://github.com/NyckolasJGF"><img src="https://github.com/NyckolasJGF.png" width="110"/></a>
+</p>
 
-### Tecnologias e Arquitetura Utilizadas
-* **Linguagem Principal:** Python 3.12
-* **Biblioteca Gráfica & Áudio:** Pygame 2.x
-* **Ambiente de Desenvolvimento (IDE):** Visual Studio Code (VS Code)
+<p align="center">
+<b>David Gabriel</b> •
+<b>David Duarte</b> •
+<b>Gabriel Andrade</b> •
+<b>Guilherme Hisham</b> •
+<b>Juan Tarcísio</b> •
+<b>Nyckolas José</b>
+</p>
+
 ---
 
-## 🎮 Funcionalidades Principais
+## Sobre o Projeto
 
-* **Sistema de Cenas Dinâmico:** Fluxo completo entre Menu Principal, Telas de Transição Temporizadas, Pause, Game Over com reset automático e Tela de Vitória.
-* **Arquitetura de Áudio Adaptativa:** Trilha sonora contextual por fase e gerenciamento inteligente de canais de áudio (`Sound.play()`) para evitar atrasos (delays) ou cortes abruptos durante combates.
-* **Gerenciador de Inventário:** Dicionário dinâmico que mapeia armas desbloqueadas (Peixeira, Revólver e Espingarda) com sincronização em tempo real com o HUD gráfico e inputs do teclado.
-* **Mecanismo de Colisões Preciso:** Detecção geométrica integrada por meio de máscaras e retângulos (`Rect`) gerenciando danos, inteligência de projéteis e coleta de itens (como o item Pitú para regenerar vida).
+**O Cangaço** é um jogo desenvolvido em **Python** utilizando a biblioteca **Pygame**, adotando uma perspectiva **Top-Down** em Pixel Art. Durante a campanha, o jogador percorre três fases, enfrenta inimigos com diferentes estratégias de combate, coleta equipamentos e evolui seu arsenal até o confronto final contra o Boss.
+
+O projeto foi desenvolvido aplicando conceitos fundamentais de **Programação Orientada a Objetos (POO)**, organização modular do código e boas práticas de desenvolvimento colaborativo com Git e GitHub.
+
+---
+
+## 🎮 Funcionalidades
+
+- Combate em tempo real com três armas desbloqueáveis.
+- Sistema de inimigos com perseguição automática.
+- Progressão por fases com Boss final.
+- Sistema de inventário integrado ao HUD.
+- Colisões utilizando `Rect` e máscaras do Pygame.
+- Itens coletáveis para recuperação de vida.
+- Sistema de áudio contextual para cada fase.
+- Menu principal, pausa, transições, vitória e Game Over.
+
+---
+
+## Tecnologias Utilizadas
+
+- **Python 3**
+- **Pygame**
+- **Programação Orientada a Objetos (POO)**
+- **Git & GitHub**
+- **Visual Studio Code**
+
+---
+
+## Conceitos Aplicados
+
+- Classes, Objetos e Herança
+- Polimorfismo
+- Estruturas de Dados (Listas e Dicionários)
+- Gerenciamento de Estados (Scenes)
+- Sistema de Colisões
+- Organização Modular do Código
+- Controle de Versão com Git
 
 ---
 
@@ -58,11 +106,6 @@ python main.py
 ```
 ---
 
-## Desenvolvedores
-
-| <a href="https://github.com/davidgabrielg10"><img src="https://github.com/davidgabrielg10.png" width="120px;" alt="David Gabriel"/></a> | <a href="https://github.com/DavidDuarte13"><img src="https://github.com/DavidDuarte13.png" width="120px;" alt="David Duarte"/></a> | <a href="https://github.com/gabrielandrade-95"><img src="https://github.com/gabrielandrade-95.png" width="120px;" alt="Gabriel Andrade"/></a> | <a href="https://github.com/guihisham-dev"><img src="https://github.com/guihisham-dev.png" width="120px;" alt="Guilherme Hisham"/></a> | <a href="https://github.com/juantarciso1"><img src="https://github.com/juantarciso1.png" width="120px;" alt="Juan Tarcísio"/></a> | <a href="https://github.com/NyckolasJGF"><img src="https://github.com/NyckolasJGF.png" width="120px;" alt="Nyckolas José"/></a> |
-|:---:|:---:|:---:|:---:|:---:|:---:|
-| **David Gabriel** | **David Duarte** | **Gabriel Andrade** | **Guilherme Hisham** | **Juan Tarcísio** | **Nyckolas José** |
 
 
 
