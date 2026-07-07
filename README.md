@@ -25,29 +25,39 @@ O jogo acompanha a jornada de Lampião enfrentando hordas de inimigos em três f
 
 ---
 
-## 💻 Como Executar o Jogo no seu PC
+## 💻 Como Executar o Jogo
 
-Siga o passo a passo abaixo para rodar o jogo localmente. Certifique-se de ter o **Python 3.10 ou superior** instalado.
+Certifique-se de possuir o **Python 3.10 ou superior**.
 
-### 1. Clonar o Repositório
+### 1. Clonar o repositório
+
 ```bash
-git clone [https://github.com/gabrielandrade-95/Projeto-Final-IP-Pygame.git](https://github.com/gabrielandrade-95/Projeto-Final-IP-Pygame.git)
+git clone https://github.com/gabrielandrade-95/Projeto-Final-IP-Pygame.git
 cd Projeto-Final-IP-Pygame
+```
 
-## No Windows (PowerShell):
+### 2. Criar e ativar o ambiente virtual
+
+#### Windows (PowerShell)
+
+```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
+```
 
+#### Linux/macOS
 
-## No Linux/macOS:
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
+```
 
+### 3. Instalar dependências e executar
 
-### 3. Instalar as Dependências e Iniciar
+```bash
 pip install pygame
 python main.py
-
+```
 ---
 
 # 🧑🏽‍💻 Desenvolvedores
